@@ -1,0 +1,192 @@
+import axios from 'axios';
+import React from 'react'
+import { useState } from 'react';
+import { IoIosArrowRoundBack } from "react-icons/io";
+import { useNavigate } from 'react-router-dom';
+
+
+const serverUrl = import.meta.env.VITE_SERVER_URL;
+
+
+function ForgotPassword() {
+        const [showNewPassword, setShowNewPassword] = useState(false);
+        const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+        const [setp, setStep] = useState(3);
+        const [email, setEmail] = useState("");
+        const [newPassword, SetNewPassword] = useState("");
+        const [confirmPassword, SetConfirmPassword] = useState("");
+        const [otp, SetOtp] = useState("");
+
+        const navigate = useNavigate();
+
+
+        const handleSendOtp = async () => {
+                try {
+                        const res = await axios.post(`${serverUrl}/api/auth/send-otp`, { email },
+                                { withCredentials: true })
+                        console.log(res.data);
+                        setStep(2);
+                } catch (error) {
+                        console.error("BACKEND ERROR 👉", error.res?.data);
+                }
+        }
+        const handleVerifyOtp = async () => {
+                try {
+                        const res = await axios.post(
+                                `${serverUrl}/api/auth/verify-otp`,
+                                { email, otp },
+                                { withCredentials: true }
+                        );
+                        console.log(res.data);
+                        setStep(3);
+                } catch (error) {
+                        console.error(
+                                "BACKEND ERROR 👉",
+                                error.response?.data?.message || error.message
+                        );
+                }
+        };
+
+        const handleResetPassword = async () => {
+                if (newPassword !== confirmPassword) {
+                        return null;
+                }
+                try {
+                        const res = await axios.post(`${serverUrl}/api/auth/reset-password`, { email, newPassword, confirmPassword },
+                                { withCredentials: true })
+                        console.log(res.data);
+                        navigate("/signin");
+                } catch (error) {
+                        console.error("BACKEND ERROR 👉", error.res?.data);
+                }
+        }
+        return (
+                <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-100 via-white to-emerald-100 px-4">
+
+                        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+                                <div className='flex items-center gap-4 mb-8'>
+                                        <IoIosArrowRoundBack size={30} className='text-red-500 cursor-pointer' onClick={() => navigate("/signin")} />
+                                        <h1 className='text-2xl font-semibold text-center text-red-500'>Forgot Password</h1>
+                                </div>
+
+                                {setp === 1
+                                        &&
+                                        <div>
+                                                {/*email*/}
+                                                <div className="mb-6">
+                                                        <label htmlFor="email" className="block text-grey-700 font-medium mb-1">Email</label>
+                                                        <input type="email" id="email" className="w-full border border-gray-500 rounded-lg px-3 py-2" placeholder="Enter your email"
+                                                                onChange={(e) => setEmail(e.target.value)}
+                                                                value={email} />
+                                                </div>
+                                                {/* Primary Button */}
+                                                <button className="w-full py-2.5 rounded-lg bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold shadow-lg hover:shadow-lg hover:scale-[1.03] active:scale-[1.02] transition-all cursor-pointer"
+                                                        onClick={handleSendOtp}
+                                                >
+                                                        Send OTP
+                                                </button>
+                                        </div>
+                                }
+
+                                {setp === 2
+                                        &&
+                                        <div>
+                                                {/*OTP*/}
+                                                <div className="mb-6">
+                                                        <label htmlFor="OTP" className="block text-grey-700 font-medium mb-1">OTP</label>
+                                                        <input type="" id="OTP" className="w-full border border-gray-500 rounded-lg px-3 py-2" placeholder="Enter your OTP"
+                                                                onChange={(e) => SetOtp(e.target.value)}
+                                                                value={otp} />
+                                                </div>
+                                                {/* Primary Button */}
+                                                <button className="w-full py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-700 text-white font-semibold shadow-lg hover:shadow-lg hover:scale-[1.03] active:scale-[1.02] transition-all cursor-pointer"
+                                                        onClick={handleVerifyOtp}
+                                                >
+                                                        Verify
+                                                </button>
+                                        </div>
+                                }
+
+                                {setp === 3
+                                        &&
+                                        <div>
+                                                {/*OTP*/}
+                                                <div className="mb-6">
+                                                        <label
+                                                                htmlFor="newPassword"
+                                                                className="block text-grey-700 font-medium mb-1"
+                                                        >
+                                                                Enter New Password
+                                                        </label>
+
+                                                        <div className="relative">
+                                                                <input
+                                                                        type={showNewPassword ? "text" : "password"}
+                                                                        id="newPassword"
+                                                                        className="w-full border border-gray-500 rounded-lg px-3 py-2 pr-14"
+                                                                        placeholder="Enter your new password"
+                                                                        onChange={(e) => SetNewPassword(e.target.value)}
+                                                                        value={newPassword}
+                                                                />
+
+                                                                <button
+                                                                        type="button"
+                                                                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-800 text-sm"
+                                                                        onClick={() => setShowNewPassword(!showNewPassword)}
+                                                                >
+                                                                        {showNewPassword ? "Hide" : "Show"}
+                                                                </button>
+                                                        </div>
+                                                </div>
+
+                                                <div className="mb-6">
+                                                        <label
+                                                                htmlFor="confirmPassword"
+                                                                className="block text-grey-700 font-medium mb-1"
+                                                        >
+                                                                Confirm Password
+                                                        </label>
+
+                                                        <div className="relative">
+                                                                <input
+                                                                        type={showConfirmPassword ? "text" : "password"}
+                                                                        id="confirmPassword"
+                                                                        className="w-full border border-gray-500 rounded-lg px-3 py-2 pr-14"
+                                                                        placeholder="Confirm your new password"
+                                                                        onChange={(e) => SetConfirmPassword(e.target.value)}
+                                                                        value={confirmPassword}
+                                                                />
+
+                                                                <button
+                                                                        type="button"
+                                                                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-800 text-sm"
+                                                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                                >
+                                                                        {showConfirmPassword ? "Hide" : "Show"}
+                                                                </button>
+                                                        </div>
+
+                                                        {confirmPassword && newPassword !== confirmPassword && (
+                                                                <p className="text-red-500 text-sm mt-1">
+                                                                        Passwords do not match
+                                                                </p>
+                                                        )}
+                                                </div>
+
+
+
+                                                {/* Primary Button */}
+                                                <button className="w-full py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-700 text-white font-semibold shadow-lg hover:shadow-lg hover:scale-[1.03] active:scale-[1.02] transition-all cursor-pointer"
+                                                        onClick={handleResetPassword}
+                                                >
+                                                        Reset Password
+                                                </button>
+                                        </div>
+                                }
+
+                        </div>
+                </div>
+        )
+}
+
+export default ForgotPassword;
