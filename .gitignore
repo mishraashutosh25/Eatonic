@@ -1,0 +1,18 @@
+# ===== ENV FILES =====
+.env
+Backend/.env
+Frontend/.env
+
+# ===== NODE MODULES =====
+node_modules/
+Backend/node_modules/
+Frontend/node_modules/
+
+# ===== BUILD FILES =====
+dist/
+build/
+Frontend/dist/
+Frontend/build/
+
+# ===== LOG FILES =====
+*.log
