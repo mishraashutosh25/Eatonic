@@ -1,7 +1,9 @@
 import axios from "axios";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../../firebase";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -35,6 +37,16 @@ export default function Signup() {
                         console.error("BACKEND ERROR 👉", error.response?.data);
                 }
         };
+
+        const handleGoogleAuth = async ()=>{
+                if(!mobile ){
+                        return alert("Mobile number is required");
+                }
+          const provider = new GoogleAuthProvider();
+          const res = await signInWithPopup(auth,provider);
+
+                console.log(res.user);
+        }
 
 
         return (
@@ -146,8 +158,8 @@ export default function Signup() {
                                         </div>
 
                                         {/* Google */}
-                                        <button className=" mt-4 w-full py-2.5 rounded-lg border border-slate-500 bg-white hover:bg-slate-200 transition font-medium cursor-pointer hover:scale-[1.03] flex items-center justify-center gap-2">
-                                                <FcGoogle size={20} />
+                                        <button className=" mt-4 w-full py-2.5 rounded-lg border border-slate-500 bg-white hover:bg-slate-200 transition font-medium cursor-pointer hover:scale-[1.03] flex items-center justify-center gap-2" onClick={handleGoogleAuth}>
+                                                <FcGoogle size={20}/>
                                                 Continue with Google
                                         </button>
                                         <p className="text-center text-sm text-slate-600 mt-4">
