@@ -3,6 +3,7 @@ import React from 'react'
 import { useState } from 'react';
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
+import { ClipLoader } from "react-spinners";
 
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
@@ -11,26 +12,32 @@ const serverUrl = import.meta.env.VITE_SERVER_URL;
 function ForgotPassword() {
         const [showNewPassword, setShowNewPassword] = useState(false);
         const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-        const [setp, setStep] = useState(3);
+        const [setp, setStep] = useState(1);
         const [email, setEmail] = useState("");
         const [newPassword, SetNewPassword] = useState("");
         const [confirmPassword, SetConfirmPassword] = useState("");
         const [otp, SetOtp] = useState("");
+        const [err,setErr]=useState("");
+        const [loading, setLoading]=useState(false);
 
         const navigate = useNavigate();
 
 
         const handleSendOtp = async () => {
+                setLoading(true);
                 try {
                         const res = await axios.post(`${serverUrl}/api/auth/send-otp`, { email },
                                 { withCredentials: true })
                         console.log(res.data);
+                        setErr("");
                         setStep(2);
+                        setLoading(false);
                 } catch (error) {
-                        console.error("BACKEND ERROR 👉", error.res?.data);
+                        setErr(error?.response?.data?.message);
                 }
         }
         const handleVerifyOtp = async () => {
+                setLoading(true);
                 try {
                         const res = await axios.post(
                                 `${serverUrl}/api/auth/verify-otp`,
@@ -39,15 +46,15 @@ function ForgotPassword() {
                         );
                         console.log(res.data);
                         setStep(3);
+                        setErr("");
+                        setLoading(false);
                 } catch (error) {
-                        console.error(
-                                "BACKEND ERROR 👉",
-                                error.response?.data?.message || error.message
-                        );
+                        setErr(error?.response?.data?.message);
                 }
         };
 
         const handleResetPassword = async () => {
+                setLoading(true);
                 if (newPassword !== confirmPassword) {
                         return null;
                 }
@@ -56,6 +63,7 @@ function ForgotPassword() {
                                 { withCredentials: true })
                         console.log(res.data);
                         navigate("/signin");
+                        setLoading(false);
                 } catch (error) {
                         console.error("BACKEND ERROR 👉", error.res?.data);
                 }
@@ -77,14 +85,16 @@ function ForgotPassword() {
                                                         <label htmlFor="email" className="block text-grey-700 font-medium mb-1">Email</label>
                                                         <input type="email" id="email" className="w-full border border-gray-500 rounded-lg px-3 py-2" placeholder="Enter your email"
                                                                 onChange={(e) => setEmail(e.target.value)}
-                                                                value={email} />
+                                                                value={email} required />
                                                 </div>
                                                 {/* Primary Button */}
                                                 <button className="w-full py-2.5 rounded-lg bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold shadow-lg hover:shadow-lg hover:scale-[1.03] active:scale-[1.02] transition-all cursor-pointer"
-                                                        onClick={handleSendOtp}
-                                                >
-                                                        Send OTP
+                                                        onClick={handleSendOtp}disabled={loading}>
+                                                {loading ?<ClipLoader size={20} color="white"/> : "Send OTP"}
                                                 </button>
+                                                {err && <p className="text-red-500 text-sm mt-1">
+                                                                        {err}
+                                                                </p>}
                                         </div>
                                 }
 
@@ -100,10 +110,12 @@ function ForgotPassword() {
                                                 </div>
                                                 {/* Primary Button */}
                                                 <button className="w-full py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-700 text-white font-semibold shadow-lg hover:shadow-lg hover:scale-[1.03] active:scale-[1.02] transition-all cursor-pointer"
-                                                        onClick={handleVerifyOtp}
-                                                >
-                                                        Verify
+                                                        onClick={handleVerifyOtp}disabled={loading}>
+                                                {loading ?<ClipLoader size={20} color="white"/> : "Verify"}
                                                 </button>
+                                                {err && <p className="text-red-500 text-sm mt-1">
+                                                                        {err}
+                                                                </p>}
                                         </div>
                                 }
 
@@ -127,6 +139,7 @@ function ForgotPassword() {
                                                                         placeholder="Enter your new password"
                                                                         onChange={(e) => SetNewPassword(e.target.value)}
                                                                         value={newPassword}
+                                                                        required
                                                                 />
 
                                                                 <button
@@ -155,6 +168,7 @@ function ForgotPassword() {
                                                                         placeholder="Confirm your new password"
                                                                         onChange={(e) => SetConfirmPassword(e.target.value)}
                                                                         value={confirmPassword}
+                                                                        required
                                                                 />
 
                                                                 <button
@@ -168,7 +182,7 @@ function ForgotPassword() {
 
                                                         {confirmPassword && newPassword !== confirmPassword && (
                                                                 <p className="text-red-500 text-sm mt-1">
-                                                                        Passwords do not match
+                                                                        {"Passwords do not match"}
                                                                 </p>
                                                         )}
                                                 </div>
@@ -177,9 +191,8 @@ function ForgotPassword() {
 
                                                 {/* Primary Button */}
                                                 <button className="w-full py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-700 text-white font-semibold shadow-lg hover:shadow-lg hover:scale-[1.03] active:scale-[1.02] transition-all cursor-pointer"
-                                                        onClick={handleResetPassword}
-                                                >
-                                                        Reset Password
+                                                        onClick={handleResetPassword}disabled={loading}>
+                                                {loading ?<ClipLoader size={20} color="white"/> : "Reset Password"}
                                                 </button>
                                         </div>
                                 }

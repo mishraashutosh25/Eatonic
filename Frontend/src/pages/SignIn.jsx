@@ -1,7 +1,10 @@
 import axios from "axios";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../../firebase";
+import { ClipLoader } from "react-spinners";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -11,9 +14,12 @@ export default function Signup() {
         const navigate = useNavigate();
         const [email, setEmail] = useState("");
         const [password, setPassword] = useState("");
+        const [err,setErr]=useState("");
+        const [loading, setLoading]=useState(false)
 
 
         const handleSignIn = async () => {
+                setLoading(true);
                 try {
                         const res = await axios.post(
                                 `${serverUrl}/api/auth/signin`,
@@ -25,10 +31,25 @@ export default function Signup() {
                         );
 
                         console.log(res.data);
+                        setErr("")
+                        setLoading(false);
                 } catch (error) {
-                        console.error("BACKEND ERROR 👉", error.response?.data);
+                        setErr(error?.response?.data?.message);
                 }
         };
+
+        const handleGoogleAuth = async () => {
+                const provider = new GoogleAuthProvider();
+                const res = await signInWithPopup(auth, provider);
+                try {
+                        const { data } = await axios.post(`${serverUrl}/api/auth/google-auth`, {
+                                email: res.user.email,
+                        }, { withCredentials: true });
+                        console.log(data);
+                } catch (error) {
+                        console.log(error)
+                }
+        }
 
 
         return (
@@ -76,7 +97,7 @@ export default function Signup() {
                                                 <label htmlFor="email" className="block text-grey-700 font-medium mb-1">Email</label>
                                                 <input type="email" id="email" className="w-full border rounded-lg px-3 py-2" placeholder="Enter your email"
                                                         onChange={(e) => setEmail(e.target.value)}
-                                                        value={email} />
+                                                        value={email} required />
                                         </div>
                                         {/*password*/}
                                         <div className="mb-4">
@@ -84,7 +105,7 @@ export default function Signup() {
                                                 <div className="relative">
                                                         <input type={`${showPassword ? "text" : "password"}`} className="w-full border rounded-lg focus:outline-none px-3 py-2" placeholder="Enter your password"
                                                                 onChange={(e) => setPassword(e.target.value)}
-                                                                value={password} />
+                                                                value={password} required />
 
                                                         <button className="absolute right-3.5 cursor-pointer top-[10px] text-gray-800"
 
@@ -96,14 +117,16 @@ export default function Signup() {
                                                 </div>
                                         </div>
                                         {/*Forgot Password*/}
-                                       <div className="text-right mb-4 text-emerald-600 font-medium cursor-pointer" onClick={()=>navigate("/forgot-password")}>
-                                        Forgot Password?
-                                       </div>
+                                        <div className="text-right mb-4 text-emerald-600 font-medium cursor-pointer" onClick={() => navigate("/forgot-password")}>
+                                                Forgot Password?
+                                        </div>
                                         {/* Primary Button */}
                                         <button className="w-full py-2.5 rounded-lg bg-gradient-to-r from-orange-500 to-emerald-500 text-white font-semibold shadow-lg hover:shadow-lg hover:scale-[1.03] active:scale-[1.02] transition-all cursor-pointer"
-                                                onClick={handleSignIn}>
-                                                Sign In
+                                                onClick={handleSignIn}disabled={loading}>
+                                                {loading ?<ClipLoader size={20} color="white"/> : "Sign In"}
                                         </button>
+
+                                        {err && <p className="text-red-500 text-center my-4">{err}</p>}
 
                                         {/* Divider */}
                                         <div className="flex items-center gap-2 mt-4 md:text-slate-400 text-xs">
@@ -113,12 +136,12 @@ export default function Signup() {
                                         </div>
 
                                         {/* Google */}
-                                        <button className=" mt-4 w-full py-2.5 rounded-lg border border-slate-500 bg-white hover:bg-slate-200 transition font-medium cursor-pointer hover:scale-[1.03] flex items-center justify-center gap-2">
+                                        <button className=" mt-4 w-full py-2.5 rounded-lg border border-slate-500 bg-white hover:bg-slate-200 transition font-medium cursor-pointer hover:scale-[1.03] flex items-center justify-center gap-2" onClick={handleGoogleAuth}>
                                                 <FcGoogle size={20} />
                                                 Continue with Google
                                         </button>
                                         <p className="text-center text-sm text-slate-600 mt-4">
-                                               First time on Eatonic?{" "}
+                                                First time on Eatonic?{" "}
                                                 <span
                                                         onClick={() => navigate("/signup")}
                                                         className="text-emerald-600 font-semibold hover:underline cursor-pointer"
