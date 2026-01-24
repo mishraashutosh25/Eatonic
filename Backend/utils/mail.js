@@ -9,11 +9,6 @@ const transporter = nodemailer.createTransport({
                 pass: process.env.EMAIL_PASS,
         },
 });
-console.log("EMAIL:", process.env.EMAIL_USER);
-console.log("PASS:", process.env.EMAIL_PASS ? "Loaded" : "Missing");
-
-
-
 
 export const sendOtpMail = async (to, otp) => {
         const info = await transporter.sendMail({
