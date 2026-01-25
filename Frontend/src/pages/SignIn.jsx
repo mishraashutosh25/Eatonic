@@ -5,6 +5,7 @@ import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 import { ClipLoader } from "react-spinners";
+import { useDispatch } from "react-redux";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -16,6 +17,7 @@ export default function Signup() {
         const [password, setPassword] = useState("");
         const [err,setErr]=useState("");
         const [loading, setLoading]=useState(false)
+        const dispatch=useDispatch();
 
 
         const handleSignIn = async () => {
@@ -30,7 +32,7 @@ export default function Signup() {
                                 { withCredentials: true }
                         );
 
-                        console.log(res.data);
+                        dispatch(setUserData(res.data))
                         setErr("")
                         setLoading(false);
                 } catch (error) {
@@ -45,7 +47,7 @@ export default function Signup() {
                         const { data } = await axios.post(`${serverUrl}/api/auth/google-auth`, {
                                 email: res.user.email,
                         }, { withCredentials: true });
-                        console.log(data);
+                        dispatch(setUserData(data))
                 } catch (error) {
                         console.log(error)
                 }
