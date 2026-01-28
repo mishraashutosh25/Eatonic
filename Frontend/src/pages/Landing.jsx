@@ -1,411 +1,463 @@
 // src/pages/Landing.jsx
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
 import { Footer } from "../components/Footer";
 import { useState, useEffect } from "react";
 
 export default function Landing() {
   const [scrolled, setScrolled] = useState(false);
-  const { scrollYProgress } = useScroll();
-  
-  const heroY = useTransform(scrollYProgress, [0, 0.5], [0, 100]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
-  
-  const mainImageY = useTransform(scrollYProgress, [0, 0.5], [0, -50]);
-  const accentImage1Y = useTransform(scrollYProgress, [0, 0.5], [0, -80]);
-  const accentImage2Y = useTransform(scrollYProgress, [0, 0.5], [0, -120]);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
+    // Stagger the hero animation for more drama
+    const timer = setTimeout(() => setIsVisible(true), 100);
+    
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(timer);
+    };
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white overflow-hidden">
-      {/* Smooth Animated Background */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
-        
-        {/* Subtle Animated Gradients */}
-        <motion.div
-          animate={{
-            opacity: [0.3, 0.5, 0.3],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{ 
-            duration: 20, 
-            repeat: Infinity, 
-            ease: "easeInOut" 
-          }}
-          className="absolute top-0 right-0 w-[1000px] h-[1000px] bg-gradient-to-br from-orange-500/20 to-transparent rounded-full blur-[150px]"
-        />
-        
-        <motion.div
-          animate={{
-            opacity: [0.3, 0.5, 0.3],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{ 
-            duration: 25, 
-            repeat: Infinity, 
-            ease: "easeInOut",
-            delay: 2
-          }}
-          className="absolute bottom-0 left-0 w-[900px] h-[900px] bg-gradient-to-tr from-emerald-500/20 to-transparent rounded-full blur-[150px]"
-        />
-        
-        <motion.div
-          animate={{
-            opacity: [0.2, 0.4, 0.2],
-            scale: [1, 1.15, 1],
-          }}
-          transition={{ 
-            duration: 30, 
-            repeat: Infinity, 
-            ease: "easeInOut",
-            delay: 5
-          }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-orange-400/15 via-emerald-400/15 to-transparent rounded-full blur-[120px]"
-        />
-
-        {/* Fine Grain */}
-        <div 
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-          }}
-        />
-      </div>
-
-      {/* NAVBAR */}
-      <motion.header
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed w-full top-0 z-50 transition-all duration-500 ${
+    <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden">
+      {/* ================= NAVBAR ================= */}
+      <header
+        className={`fixed top-0 w-full z-50 transition-all duration-700 ${
           scrolled
-            ? "bg-slate-950/70 backdrop-blur-2xl border-b border-white/5"
+            ? "bg-white/90 backdrop-blur-xl shadow-sm border-b border-gray-100"
             : "bg-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 lg:px-8 py-6">
-          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-orange-400 to-emerald-400 bg-clip-text text-transparent">
-            Eatonic
-          </h1>
-          <div className="flex items-center gap-6">
+        <div className="max-w-7xl mx-auto flex justify-between items-center px-6 lg:px-8 py-4">
+          <Link to="/" className="group">
+            <h1
+              className={`text-3xl font-bold tracking-tight transition-all duration-500 ${
+                scrolled 
+                  ? "text-gray-900" 
+                  : "text-white drop-shadow-lg"
+              }`}
+            >
+              Eatonic
+              <span className={`inline-block ml-1 transition-all duration-500 ${
+                scrolled ? "text-red-600" : "text-red-400"
+              }`}>.</span>
+            </h1>
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-10">
+            <a
+              href="#features"
+              className={`text-sm font-medium transition-all duration-300 hover:text-red-600 relative group ${
+                scrolled ? "text-gray-600" : "text-white/90"
+              }`}
+            >
+              Features
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full" />
+            </a>
+            <a
+              href="#how-it-works"
+              className={`text-sm font-medium transition-all duration-300 hover:text-red-600 relative group ${
+                scrolled ? "text-gray-600" : "text-white/90"
+              }`}
+            >
+              How it works
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full" />
+            </a>
+          </nav>
+
+          <div className="flex items-center gap-3">
             <Link
-              to="/login"
-              className="relative text-sm font-medium text-slate-300 hover:text-white transition-colors duration-300 group"
+              to="/signin"
+              className={`text-sm font-semibold transition-all duration-300 hover:text-red-600 px-4 py-2 ${
+                scrolled ? "text-gray-700" : "text-white"
+              }`}
             >
               Login
-              <span className="absolute -bottom-1 left-0 w-0 h-px bg-gradient-to-r from-orange-400 to-emerald-400 group-hover:w-full transition-all duration-500" />
             </Link>
             <Link
               to="/signup"
-              className="text-sm font-semibold px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-emerald-500 text-white hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-300"
+              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-500 ${
+                scrolled
+                  ? "bg-gradient-to-r from-red-600 to-red-500 text-white hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-0.5"
+                  : "bg-white text-gray-900 hover:bg-white/90 shadow-lg"
+              }`}
             >
-              Sign Up
+              Sign up
             </Link>
           </div>
         </div>
-      </motion.header>
+      </header>
 
-      {/* HERO */}
-      <section className="relative px-6 lg:px-8 pt-32 pb-24 lg:pt-48 lg:pb-32 min-h-screen flex items-center">
-        <div className="max-w-7xl mx-auto w-full">
-          <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-            {/* Left Content */}
-            <motion.div 
-              style={{ y: heroY, opacity: heroOpacity }} 
-              className="relative z-10"
-            >
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-              >
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
-                  className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm"
-                >
-                  <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                  <span className="text-sm font-medium text-slate-300">Available in your city</span>
-                </motion.div>
+      {/* ================= HERO ================= */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image with Parallax Effect */}
+        <div className="absolute inset-0">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage:
+                "url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&q=90')",
+              transform: "scale(1.1)",
+            }}
+          />
+          {/* Refined gradient overlay for better text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900/75 via-gray-900/60 to-black/70" />
+          {/* Subtle vignette effect */}
+          <div className="absolute inset-0 bg-radial-gradient from-transparent via-transparent to-black/40" />
+        </div>
 
-                <h1 className="text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1.05] mb-8">
-                  Your favorite food,{" "}
-                  <span className="relative inline-block mt-2">
-                    <span className="bg-gradient-to-r from-orange-400 via-orange-300 to-emerald-400 bg-clip-text text-transparent">
-                      delivered instantly
-                    </span>
-                  </span>
-                </h1>
-
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-xl text-slate-400 leading-relaxed mb-12 max-w-xl"
-                >
-                  Browse local restaurants, order with one tap, and track your delivery in real-time.
-                </motion.p>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                  className="flex flex-wrap gap-4"
-                >
-                  <Link
-                    to="/signup"
-                    className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl bg-gradient-to-r from-orange-500 to-emerald-500 text-white overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/30 hover:-translate-y-0.5"
-                  >
-                    <span className="relative z-10 flex items-center gap-2">
-                      Get Started
-                      <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                      </svg>
-                    </span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </Link>
-                  
-                  <Link
-                    to="/login"
-                    className="inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl border border-white/10 text-white hover:bg-white/5 hover:border-white/20 transition-all duration-300"
-                  >
-                    Login
-                  </Link>
-                </motion.div>
-
-                {/* Stats */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                  className="flex flex-wrap gap-8 mt-16 pt-8 border-t border-white/10"
-                >
-                  <div>
-                    <div className="text-2xl font-bold text-white">10K+</div>
-                    <div className="text-sm text-slate-500 mt-1">Active Users</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-white">500+</div>
-                    <div className="text-sm text-slate-500 mt-1">Restaurants</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-white">4.9★</div>
-                    <div className="text-sm text-slate-500 mt-1">Rating</div>
-                  </div>
-                </motion.div>
-              </motion.div>
-            </motion.div>
-
-            {/* Right Content - Food Image */}
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.8, duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-              style={{ y: mainImageY }}
-              className="relative"
-            >
-              <motion.div
-                animate={{ y: [0, -15, 0] }}
-                transition={{ repeat: Infinity, duration: 20, ease: "easeInOut" }}
-                className="relative"
-              >
-                {/* Soft Glow */}
-                <div className="absolute -inset-8 bg-gradient-to-br from-orange-500/25 via-orange-400/20 to-emerald-500/25 blur-[60px] opacity-60" />
-                
-                {/* Main Image */}
-                <div className="relative group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-500 via-orange-400 to-emerald-500 rounded-[2rem] opacity-50 blur-sm" />
-                  
-                  <div className="relative bg-slate-900/50 backdrop-blur-sm rounded-[2rem] p-2">
-                    <img
-                      src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800&q=90"
-                      alt="Premium Indian Food"
-                      className="w-full rounded-[1.75rem] shadow-2xl"
-                    />
-                    
-                    {/* Glass Reflection */}
-                    <div className="absolute inset-2 rounded-[1.75rem] bg-gradient-to-tr from-white/10 via-transparent to-transparent opacity-40 pointer-events-none" />
-                  </div>
-                </div>
-
-                {/* Floating Badges */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 1.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute -top-4 -right-4 bg-gradient-to-br from-orange-500 to-orange-600 text-white px-5 py-3 rounded-xl shadow-lg shadow-orange-500/30 backdrop-blur-sm"
-                >
-                  <div className="text-xl font-bold">30min</div>
-                  <div className="text-xs opacity-90">Delivery</div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 1.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute -bottom-4 -left-4 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white px-5 py-3 rounded-xl shadow-lg shadow-emerald-500/30 backdrop-blur-sm"
-                >
-                  <div className="text-xl font-bold">₹99</div>
-                  <div className="text-xs opacity-90">From</div>
-                </motion.div>
-              </motion.div>
-            </motion.div>
+        {/* Hero Content with Staggered Animation */}
+        <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
+          {/* Badge */}
+          <div
+            className={`mb-8 inline-block transition-all duration-1000 delay-100 ${
+              isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
+            }`}
+          >
+            <span className="px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium shadow-xl inline-flex items-center gap-2">
+              <span className="text-lg">🍽️</span>
+              <span>Your food journey starts here</span>
+            </span>
           </div>
 
-          {/* Accent Images - Background Layer */}
-          <div className="hidden xl:block pointer-events-none">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.3 }}
-              transition={{ delay: 2, duration: 1.5 }}
-              style={{ y: accentImage1Y }}
-              className="absolute right-16 bottom-24 w-72"
-            >
-              <motion.div
-                animate={{ y: [0, -20, 0] }}
-                transition={{ repeat: Infinity, duration: 18, ease: "easeInOut" }}
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe"
-                  alt=""
-                  className="w-full rounded-2xl shadow-xl opacity-60 blur-[1px]"
-                />
-              </motion.div>
-            </motion.div>
+          {/* Main Headline */}
+          <h1
+            className={`text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 text-white leading-[1.1] transition-all duration-1000 delay-200 ${
+              isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
+            }`}
+          >
+            Craving something
+            <span className="block mt-3 bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent">
+              delicious?
+            </span>
+          </h1>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.25 }}
-              transition={{ delay: 2.2, duration: 1.5 }}
-              style={{ y: accentImage2Y }}
-              className="absolute left-16 bottom-32 w-64"
+          {/* Subheadline */}
+          <p
+            className={`text-xl sm:text-2xl mb-12 text-gray-100 max-w-2xl mx-auto leading-relaxed font-light transition-all duration-1000 delay-300 ${
+              isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
+            }`}
+          >
+            Discover extraordinary dining experiences from local favorites to
+            hidden gems, all at your fingertips.
+          </p>
+
+          {/* Trust Indicators with Icon Enhancement */}
+          <div
+            className={`flex flex-wrap justify-center gap-8 text-white/90 text-sm transition-all duration-1000 delay-700 ${
+              isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
+            }`}
+          >
+            <div className="flex items-center gap-2.5 bg-white/5 backdrop-blur-sm px-4 py-2.5 rounded-full border border-white/10">
+              <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center">
+                <svg
+                  className="w-3 h-3 text-green-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <span className="font-medium">10,000+ restaurants</span>
+            </div>
+            <div className="flex items-center gap-2.5 bg-white/5 backdrop-blur-sm px-4 py-2.5 rounded-full border border-white/10">
+              <div className="w-5 h-5 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                <svg
+                  className="w-3 h-3 text-yellow-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              </div>
+              <span className="font-medium">4.8 average rating</span>
+            </div>
+            <div className="flex items-center gap-2.5 bg-white/5 backdrop-blur-sm px-4 py-2.5 rounded-full border border-white/10">
+              <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">
+                <svg
+                  className="w-3 h-3 text-blue-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                </svg>
+              </div>
+              <span className="font-medium">50,000+ happy users</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Refined Scroll Indicator */}
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2">
+          <div className="flex flex-col items-center gap-2 animate-bounce">
+            <span className="text-white/60 text-xs uppercase tracking-wider font-medium">Scroll</span>
+            <svg
+              className="w-5 h-5 text-white/60"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <motion.div
-                animate={{ y: [0, 25, 0] }}
-                transition={{ repeat: Infinity, duration: 22, ease: "easeInOut" }}
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1551218808-94e220e084d2"
-                  alt=""
-                  className="w-full rounded-2xl shadow-lg opacity-50 blur-[1px]"
-                />
-              </motion.div>
-            </motion.div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
+            </svg>
           </div>
         </div>
       </section>
 
-      {/* GALLERY */}
-      <section className="relative px-6 lg:px-8 py-24 lg:py-32">
+      {/* ================= FEATURES ================= */}
+      <section id="features" className="py-28 px-6 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-5xl lg:text-6xl font-bold tracking-tight mb-4">
-              <span className="bg-gradient-to-r from-orange-400 to-emerald-400 bg-clip-text text-transparent">
-                Explore delicious moments
-              </span>
+          {/* Section Header */}
+          <div className="text-center mb-20">
+            <div className="inline-block mb-4">
+              <span className="text-red-600 font-semibold text-sm uppercase tracking-wider">Features</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-bold mb-5 text-gray-900 leading-tight">
+              Why choose Eatonic?
             </h2>
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-              From local favorites to exotic cuisines
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Experience food delivery reimagined with features designed for
+              your convenience
             </p>
-          </motion.div>
+          </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Feature Cards */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              "photo-1600891964599-f61ba0e24092",
-              "photo-1555939594-58d7cb561ad1",
-              "photo-1543352634-8730e2b3b4e5",
-              "photo-1565299624946-b28f40a0ae38",
-            ].map((id, i) => (
-              <motion.div
-                key={id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: i * 0.1,
-                  duration: 0.8,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                viewport={{ once: true, margin: "-50px" }}
-                whileHover={{ y: -8 }}
-                className="group relative"
+              {
+                title: "Order Online",
+                desc: "Browse menus, customize orders, and get food delivered to your doorstep in minutes",
+                img: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=600",
+                icon: "🚀",
+                gradient: "from-orange-400 to-red-500",
+                color: "red",
+              },
+              {
+                title: "Dine In",
+                desc: "Discover and reserve tables at the city's finest restaurants with exclusive offers",
+                img: "https://i.pinimg.com/736x/93/32/08/933208855a4b4d89b931899b9381f291.jpg",
+                icon: "🍽️",
+                gradient: "from-purple-400 to-pink-500",
+                color: "purple",
+              },
+              {
+                title: "Nightlife",
+                desc: "Explore curated bars, clubs, and lounges for unforgettable evening experiences",
+                img: "https://i.pinimg.com/736x/ce/3c/fb/ce3cfb6b672a3fe525f11345566f482d.jpg",
+                icon: "🌙",
+                gradient: "from-blue-400 to-indigo-500",
+                color: "blue",
+              },
+            ].map((item, index) => (
+              <div
+                key={item.title}
+                className="group bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-700 hover:-translate-y-3 border border-gray-100"
               >
-                <div className="relative overflow-hidden rounded-xl bg-slate-900/50 p-1">
+                <div className="relative h-64 overflow-hidden">
                   <img
-                    src={`https://images.unsplash.com/${id}`}
-                    alt="Food"
-                    className="w-full rounded-lg transition-transform duration-700 group-hover:scale-110"
+                    src={item.img}
+                    alt={item.title}
+                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000 ease-out"
                   />
-                  
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent group-hover:from-black/80 transition-all duration-500" />
+                  <div className="absolute bottom-5 left-5">
+                    <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-3xl border border-white/20 group-hover:scale-110 transition-transform duration-500">
+                      {item.icon}
+                    </div>
+                  </div>
                 </div>
-                
-                <div className="absolute inset-0 rounded-xl shadow-lg group-hover:shadow-2xl transition-shadow duration-500 pointer-events-none" />
-              </motion.div>
+
+                <div className="p-7">
+                  <h3 className="text-2xl font-bold mb-3 text-gray-900 group-hover:text-red-600 transition-colors duration-300">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed mb-5 text-[15px]">
+                    {item.desc}
+                  </p>
+                  <button
+                    className={`inline-flex items-center gap-2 text-sm font-semibold bg-gradient-to-r ${item.gradient} bg-clip-text text-transparent group-hover:gap-3 transition-all duration-300`}
+                  >
+                    <span>Learn more</span>
+                    <svg
+                      className="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="relative px-6 lg:px-8 py-32 lg:py-40 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-500 via-orange-400 to-emerald-500" />
+      {/* ================= HOW IT WORKS ================= */}
+      <section id="how-it-works" className="py-28 px-6 bg-white relative overflow-hidden">
+        {/* Subtle background decoration */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-red-50/30 to-transparent pointer-events-none" />
         
-        <motion.div
-          animate={{
-            opacity: [0.1, 0.15, 0.1],
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0"
-          style={{
-            backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 1px, transparent 1px)',
-            backgroundSize: '50px 50px'
-          }}
-        />
-
-        <div className="relative max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-5xl lg:text-7xl font-bold tracking-tight text-white mb-6">
-              Ready to get started?
+        <div className="max-w-6xl mx-auto relative">
+          <div className="text-center mb-20">
+            <div className="inline-block mb-4">
+              <span className="text-red-600 font-semibold text-sm uppercase tracking-wider">Process</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-bold mb-5 text-gray-900 leading-tight">
+              Getting started is easy
             </h2>
-
-            <p className="text-xl text-white/95 mb-12">
-              Join thousands ordering with Eatonic every day
+            <p className="text-xl text-gray-600">
+              Your perfect meal is just three steps away
             </p>
+          </div>
 
-            <Link
-              to="/signup"
-              className="inline-flex items-center justify-center px-10 py-4 text-lg font-semibold rounded-xl bg-white text-slate-900 shadow-2xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
-            >
-              <span className="flex items-center gap-2">
-                Create Account
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </span>
-            </Link>
+          <div className="grid md:grid-cols-3 gap-16 relative">
+            {/* Connection Lines (Desktop) */}
+            <div className="hidden md:block absolute top-12 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-red-200 to-transparent" />
+            
+            {[
+              {
+                step: "01",
+                title: "Choose your favorite",
+                desc: "Browse through hundreds of restaurants and cuisines in your area",
+                icon: "🔍",
+              },
+              {
+                step: "02",
+                title: "Place your order",
+                desc: "Customize your meal and complete your order with secure payment",
+                icon: "🛒",
+              },
+              {
+                step: "03",
+                title: "Enjoy your meal",
+                desc: "Track your order in real-time and enjoy hot, fresh food at your door",
+                icon: "😋",
+              },
+            ].map((item, index) => (
+              <div key={item.step} className="text-center group relative">
+                <div className="relative mb-8">
+                  <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-5xl shadow-xl group-hover:shadow-2xl group-hover:shadow-red-500/30 group-hover:scale-110 transition-all duration-500 relative z-10">
+                    {item.icon}
+                  </div>
+                  {/* Step Number Badge */}
+                  <div className="absolute -top-3 -right-3 w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center font-bold text-red-600 border-2 border-red-100 group-hover:scale-110 transition-transform duration-500 z-20">
+                    {item.step}
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold mb-4 text-gray-900 group-hover:text-red-600 transition-colors duration-300">
+                  {item.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed text-[15px] max-w-xs mx-auto">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            <p className="mt-6 text-white/80 text-sm">
-              No credit card required • Free first delivery
-            </p>
-          </motion.div>
+      {/* ================= STATS ================= */}
+      <section className="py-24 px-6 bg-gradient-to-br from-red-600 via-red-500 to-orange-500 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+        
+        <div className="max-w-6xl mx-auto relative">
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-12 text-center text-white">
+            {[
+              { number: "10K+", label: "Restaurants" },
+              { number: "50K+", label: "Active Users" },
+              { number: "100K+", label: "Orders Delivered" },
+              { number: "4.8★", label: "Average Rating" },
+            ].map((stat) => (
+              <div key={stat.label} className="group">
+                <div className="text-6xl font-bold mb-3 group-hover:scale-110 transition-transform duration-500">
+                  {stat.number}
+                </div>
+                <div className="text-white/90 text-sm uppercase tracking-wider font-medium">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ================= CTA ================= */}
+      <section className="py-32 px-6 bg-gradient-to-b from-white via-gray-50 to-white">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="bg-white rounded-[2rem] shadow-xl p-12 md:p-20 border border-gray-100 relative overflow-hidden group">
+            {/* Subtle hover effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-red-50/50 to-orange-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            
+            <div className="relative">
+              <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-gray-900 leading-tight">
+                Ready to satisfy your cravings?
+              </h2>
+
+              <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
+                Join thousands of food lovers who trust Eatonic for their daily
+                dining needs. Start your culinary adventure today.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-5 justify-center mb-8">
+                <Link
+                  to="/signup"
+                  className="inline-block px-12 py-4 rounded-full bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold hover:from-red-700 hover:to-red-600 shadow-lg hover:shadow-xl hover:shadow-red-500/30 transition-all duration-500 transform hover:scale-105 active:scale-100"
+                >
+                  Get Started Free
+                </Link>
+                <Link
+                  to="/signin"
+                  className="inline-block px-12 py-4 rounded-full border-2 border-gray-200 text-gray-700 font-semibold hover:border-red-500 hover:text-red-600 hover:bg-red-50/50 transition-all duration-300"
+                >
+                  Sign In
+                </Link>
+              </div>
+
+              <div className="flex items-center justify-center gap-6 text-sm text-gray-500">
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>No credit card required</span>
+                </div>
+                <span className="text-gray-300">•</span>
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Free forever plan</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
