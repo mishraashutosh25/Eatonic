@@ -6,6 +6,7 @@ import { RxCross1 } from "react-icons/rx";
 import { useSelector, useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice";
 import axios from "axios";
+import { FiPlus } from "react-icons/fi";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -17,19 +18,19 @@ function Nav() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
-  const handleLogOut=async()=>{
-        try{
-const res=await axios.get(`${serverUrl}/api/auth/signout`,{withCredentials:true})
-dispatch(setUserData(null))
-        }catch(error){
-console.log(error)
-        }
+  const handleLogOut = async () => {
+    try {
+      const res = await axios.get(`${serverUrl}/api/auth/signout`, { withCredentials: true })
+      dispatch(setUserData(null))
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
     <>
       {/* ================= Mobile Search Overlay ================= */}
-      {mobileSearchOpen && (
+      {mobileSearchOpen && userData.role == "user" && (
         <div className="fixed top-[80px] left-[5%] w-[90%] h-[70px]
           bg-white shadow-xl rounded-lg flex items-center gap-4
           px-3 z-[9999] md:hidden">
@@ -68,7 +69,7 @@ console.log(error)
         </h1>
 
         {/* Desktop Search */}
-        <div className="hidden md:flex w-[35%] h-[50px]
+        {userData.role == "user" && (<div className="hidden md:flex w-[35%] h-[50px]
           bg-white rounded-lg shadow-sm items-center gap-4 px-3">
 
           <div className="flex items-center w-[30%] gap-2 border-r border-gray-300">
@@ -76,6 +77,8 @@ console.log(error)
             <span className="truncate text-gray-700 font-semibold">{city || "Detecting..."}
             </span>
           </div>
+
+
 
           <div className="flex items-center w-[70%] gap-2">
             <IoMdSearch size={22} className="text-red-500" />
@@ -87,25 +90,38 @@ console.log(error)
             />
           </div>
         </div>
-
+        )}
         {/* Right Section */}
         <div className="flex items-center gap-6 relative">
-
-          {/* Mobile Search Icon */}
-          <IoMdSearch
+          {userData.role == "user" && (<IoMdSearch
             size={24}
             className="text-red-500 cursor-pointer md:hidden"
             onClick={() => setMobileSearchOpen(true)}
-          />
+          />)}
+          {/* Mobile Search Icon */}
+
 
           {/* Cart */}
-          <div className="relative cursor-pointer">
+          {userData.role == "user" && (<div className="relative cursor-pointer">
             <FaCartPlus size={26} className="text-red-500" />
             <span className="absolute -top-2 -right-2 text-[10px]
               bg-red-500 text-white px-[5px] rounded-full">
               0
             </span>
-          </div>
+          </div>)}
+          {userData.role == "owner" && (
+            <>
+              <button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#ff4d2d]">
+                <FiPlus size={24} />
+                <span>Add Food Item</span>
+              </button>
+              <button className="md:hidden flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#ff4d2d]">
+                <FiPlus size={24} />
+              </button>
+
+            </>
+         )}
+
 
           {/* Avatar */}
           <div
@@ -129,9 +145,9 @@ console.log(error)
                 </p>
               </div>
 
-              <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">
+               <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">
                 📦 My Orders
-              </button>
+              </button> 
 
               <button
                 onClick={handleLogOut}
