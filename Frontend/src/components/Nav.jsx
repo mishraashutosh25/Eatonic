@@ -109,7 +109,7 @@ function Nav() {
               0
             </span>
           </div>)}
-          {userData.role == "owner" && (
+          {userData.role == "owner" ? (
             <>
               <button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#ff4d2d]">
                 <FiPlus size={24} />
@@ -120,7 +120,10 @@ function Nav() {
               </button>
 
             </>
-
+          ) : (
+            <button className="md:hidden md:flex text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">
+              📦 My Orders
+            </button>
 
           )}
 
@@ -146,10 +149,6 @@ function Nav() {
                   {userData?.email}
                 </p>
               </div>
-
-              <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">
-                📦 My Orders
-              </button>
 
               <button
                 onClick={handleLogOut}

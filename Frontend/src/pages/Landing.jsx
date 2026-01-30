@@ -44,7 +44,7 @@ export default function Landing() {
               Eatonic
               <span className={`inline-block ml-1 transition-all duration-500 ${
                 scrolled ? "text-red-600" : "text-red-400"
-              }`}>.</span>
+              }`}>🍽️</span>
             </h1>
           </Link>
 
@@ -82,7 +82,7 @@ export default function Landing() {
               to="/signup"
               className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-500 ${
                 scrolled
-                  ? "bg-gradient-to-r from-red-600 to-red-500 text-white hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-0.5"
+                  ? "bg-gradient-to-r from-orange-600 to-orange-600 text-white hover:shadow-lg hover:shadow-orange-600/30 hover:-translate-y-0.5"
                   : "bg-white text-gray-900 hover:bg-white/90 shadow-lg"
               }`}
             >
@@ -206,7 +206,7 @@ export default function Landing() {
         {/* Refined Scroll Indicator */}
         <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2">
           <div className="flex flex-col items-center gap-2 animate-bounce">
-            <span className="text-white/60 text-xs uppercase tracking-wider font-medium">Scroll</span>
+            <span className="text-white/60 text-xs uppercase tracking-wider font-medium">Scroll Down</span>
             <svg
               className="w-5 h-5 text-white/60"
               fill="none"
@@ -216,7 +216,7 @@ export default function Landing() {
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
+                strokeWidth={3}
                 d="M19 14l-7 7m0 0l-7-7m7 7V3"
               />
             </svg>
