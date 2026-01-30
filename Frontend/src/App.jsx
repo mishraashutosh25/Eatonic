@@ -1,27 +1,72 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import SignUp from './pages/SignUp'
-import SignIn from './pages/SignIn'
-import Landing from './pages/Landing'
-import ForgotPassword from './pages/ForgotPassword'
-import useGetCurrentUser from './hooks/userGetCurrentUser'
-import Home from './pages/Home'
-import { useSelector } from 'react-redux'
-import useGetCity from './hooks/useGetCity'
-const serverUrl = import.meta.env.VITE_SERVER_URL
+import { Routes, Route } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+import SignUp from "./pages/SignUp";
+import SignIn from "./pages/SignIn";
+import Landing from "./pages/Landing";
+import ForgotPassword from "./pages/ForgotPassword";
+import Home from "./pages/Home";
+
+import useGetCurrentUser from "./hooks/userGetCurrentUser";
+import useGetCity from "./hooks/useGetCity";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 
 function App() {
   useGetCurrentUser();
   useGetCity();
-   const userData = useSelector((state) => state.user.userData);
+
+  const [theme, setTheme] = useState(
+    localStorage.getItem("theme") || "light"
+  );
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
   return (
     <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/signup" element={!userData ? <SignUp /> : <Navigate to={"/home"} />} />
-      <Route path="/signin" element={!userData ? <SignIn /> : <Navigate to={"/home"} />} />
-      <Route path="/forgot-password" element={!userData ? <ForgotPassword /> : <Navigate to={"/home"} />} />
-      <Route path='/home' element={userData ? <Home /> : <Navigate to={"/signin"} />} />
+      <Route path="/" element={<Landing theme={theme} setTheme={setTheme} />} />
+
+      <Route
+        path="/signin"
+        element={
+          <PublicRoute>
+            <SignIn />
+          </PublicRoute>
+        }
+      />
+
+      <Route
+        path="/signup"
+        element={
+          <PublicRoute>
+            <SignUp />
+          </PublicRoute>
+        }
+      />
+
+      <Route
+        path="/forgot-password"
+        element={
+          <PublicRoute>
+            <ForgotPassword />
+          </PublicRoute>
+        }
+      />
+
+      <Route
+        path="/home"
+        element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -18,9 +18,9 @@ export default function Signup() {
         const [email, setEmail] = useState("");
         const [mobile, setMobile] = useState("");
         const [password, setPassword] = useState("");
-        const [err,setErr]=useState("");
-        const [loading, setLoading]=useState(false);
-        const dispatch=useDispatch();
+        const [err, setErr] = useState("");
+        const [loading, setLoading] = useState(false);
+        const dispatch = useDispatch();
 
 
         const handleSignUp = async () => {
@@ -99,7 +99,14 @@ export default function Signup() {
 
 
                                 {/* Form */}
-                                <div className="p-4 md:p-8">
+                                <form
+                                        className="p-4 md:p-8"
+                                        onSubmit={(e) => {
+                                                e.preventDefault();
+                                                handleSignUp();
+                                        }}
+                                >
+
                                         <h2 className="text-3xl font-extrabold text-gray-900">
                                                 Eatonic🍽️
                                         </h2>
@@ -126,7 +133,7 @@ export default function Signup() {
                                                 <input type="text" id="mobile" className="w-full border rounded-lg px-3 py-2" placeholder="Enter your mobile number"
                                                         onChange={(e) => setMobile(e.target.value)}
                                                         value={mobile} required />
-                                                        
+
                                         </div>
                                         {/*password*/}
                                         <div className="mb-4">
@@ -136,7 +143,8 @@ export default function Signup() {
                                                                 onChange={(e) => setPassword(e.target.value)}
                                                                 value={password} required />
 
-                                                        <button className="absolute right-3.5 cursor-pointer top-[10px] text-gray-800"
+                                                        <button
+                                                        type="button" className="absolute right-3.5 cursor-pointer top-[10px] text-gray-800"
 
                                                                 onClick={() => setShowPassword(!showPassword)}
                                                         >
@@ -151,6 +159,7 @@ export default function Signup() {
                                                 <div className="flex gap-2">
                                                         {["user", "owner", "deliveryBoy"].map((r) => (
                                                                 <button
+                                                                type="button"
                                                                         key={r} // UNIQUE KEY
                                                                         className='flex-1 border rounded-lg px-2 py-2 text-center font-medium transition-colors cursor-pointer'
                                                                         onClick={() => setRole(r)}
@@ -162,10 +171,11 @@ export default function Signup() {
                                                         ))}
                                                 </div>
                                         </div>
+
                                         {/* Primary Button */}
-                                        <button className="w-full py-2.5 rounded-lg bg-gradient-to-r from-orange-500 to-emerald-500 text-white font-semibold shadow-lg hover:shadow-lg hover:scale-[1.03] active:scale-[1.02] transition-all cursor-pointer"
-                                                onClick={handleSignUp} disabled={loading}>
-                                                {loading ?<ClipLoader size={20} color="white"/> : "Sign Up"}
+                                        <button type="submit" className="w-full py-2.5 rounded-lg bg-gradient-to-r from-orange-500 to-emerald-500 text-white font-semibold shadow-lg hover:shadow-lg hover:scale-[1.03] active:scale-[1.02] transition-all cursor-pointer"
+                                                disabled={loading}>
+                                                {loading ? <ClipLoader size={20} color="white" /> : "Sign Up"}
                                         </button>
                                         {err && <p className="text-red-500 text-center my-4">{err}</p>}
 
@@ -177,7 +187,7 @@ export default function Signup() {
                                         </div>
 
                                         {/* Google */}
-                                        <button className=" mt-4 w-full py-2.5 rounded-lg border border-slate-500 bg-white hover:bg-slate-200 transition font-medium cursor-pointer hover:scale-[1.03] flex items-center justify-center gap-2" onClick={handleGoogleAuth}>
+                                        <button type="button" className=" mt-4 w-full py-2.5 rounded-lg border border-slate-500 bg-white hover:bg-slate-200 transition font-medium cursor-pointer hover:scale-[1.03] flex items-center justify-center gap-2" onClick={handleGoogleAuth}>
                                                 <FcGoogle size={20} />
                                                 Continue with Google
                                         </button>
@@ -190,8 +200,9 @@ export default function Signup() {
                                                         Sign In
                                                 </span>
                                         </p>
+                                </form>
 
-                                </div>
+
                         </div>
                 </div>
         );

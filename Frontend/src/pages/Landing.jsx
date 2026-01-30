@@ -2,19 +2,21 @@
 import { Link } from "react-router-dom";
 import { Footer } from "../components/Footer";
 import { useState, useEffect } from "react";
+import { Sun, Moon } from "lucide-react";
 
-export default function Landing() {
+
+export default function Landing({ theme, setTheme }) {
   const [scrolled, setScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     // Stagger the hero animation for more drama
     const timer = setTimeout(() => setIsVisible(true), 100);
-    
+
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
-    
+
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -26,43 +28,38 @@ export default function Landing() {
     <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden">
       {/* ================= NAVBAR ================= */}
       <header
-        className={`fixed top-0 w-full z-50 transition-all duration-700 ${
-          scrolled
+        className={`fixed top-0 w-full z-50 transition-all duration-700 ${scrolled
             ? "bg-white/90 backdrop-blur-xl shadow-sm border-b border-gray-100"
             : "bg-transparent"
-        }`}
+          }`}
       >
         <div className="max-w-7xl mx-auto flex justify-between items-center px-6 lg:px-8 py-4">
           <Link to="/" className="group">
             <h1
-              className={`text-3xl font-bold tracking-tight transition-all duration-500 ${
-                scrolled 
-                  ? "text-gray-900" 
+              className={`text-3xl font-bold tracking-tight transition-all duration-500 ${scrolled
+                  ? "text-gray-900"
                   : "text-white drop-shadow-lg"
-              }`}
+                }`}
             >
               Eatonic
-              <span className={`inline-block ml-1 transition-all duration-500 ${
-                scrolled ? "text-red-600" : "text-red-400"
-              }`}>🍽️</span>
+              <span className={`inline-block ml-1 transition-all duration-500 ${scrolled ? "text-red-600" : "text-red-400"
+                }`}>🍽️</span>
             </h1>
           </Link>
 
           <nav className="hidden md:flex items-center gap-10">
             <a
               href="#features"
-              className={`text-sm font-medium transition-all duration-300 hover:text-red-600 relative group ${
-                scrolled ? "text-gray-600" : "text-white/90"
-              }`}
+              className={`text-sm font-medium transition-all duration-300 hover:text-red-600 relative group ${scrolled ? "text-gray-600" : "text-white/90"
+                }`}
             >
               Features
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full" />
             </a>
             <a
               href="#how-it-works"
-              className={`text-sm font-medium transition-all duration-300 hover:text-red-600 relative group ${
-                scrolled ? "text-gray-600" : "text-white/90"
-              }`}
+              className={`text-sm font-medium transition-all duration-300 hover:text-red-600 relative group ${scrolled ? "text-gray-600" : "text-white/90"
+                }`}
             >
               How it works
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full" />
@@ -72,28 +69,36 @@ export default function Landing() {
           <div className="flex items-center gap-3">
             <Link
               to="/signin"
-              className={`text-sm font-semibold transition-all duration-300 hover:text-red-600 px-4 py-2 ${
-                scrolled ? "text-gray-700" : "text-white"
-              }`}
+              className={`text-sm font-semibold transition-all duration-300 hover:text-red-600 px-4 py-2 ${scrolled ? "text-gray-700" : "text-white"
+                }`}
             >
               Login
             </Link>
             <Link
               to="/signup"
-              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-500 ${
-                scrolled
+              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-500 ${scrolled
                   ? "bg-gradient-to-r from-orange-600 to-orange-600 text-white hover:shadow-lg hover:shadow-orange-600/30 hover:-translate-y-0.5"
                   : "bg-white text-gray-900 hover:bg-white/90 shadow-lg"
-              }`}
+                }`}
             >
               Sign up
             </Link>
+
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className={`text-sm font-semibold transition-all duration-300 hover:text-red-600 px-4 py-2 ${scrolled ? "text-black-700" : "text-white"
+                }`}
+            >
+              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+
           </div>
         </div>
       </header>
 
       {/* ================= HERO ================= */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section
+       className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background Image with Parallax Effect */}
         <div className="absolute inset-0">
           <div
@@ -114,11 +119,10 @@ export default function Landing() {
         <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
           {/* Badge */}
           <div
-            className={`mb-8 inline-block transition-all duration-1000 delay-100 ${
-              isVisible
+            className={`mb-8 inline-block transition-all duration-1000 delay-100 ${isVisible
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-4"
-            }`}
+              }`}
           >
             <span className="px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium shadow-xl inline-flex items-center gap-2">
               <span className="text-lg">🍽️</span>
@@ -128,11 +132,10 @@ export default function Landing() {
 
           {/* Main Headline */}
           <h1
-            className={`text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 text-white leading-[1.1] transition-all duration-1000 delay-200 ${
-              isVisible
+            className={`text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 text-white leading-[1.1] transition-all duration-1000 delay-200 ${isVisible
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-4"
-            }`}
+              }`}
           >
             Craving something
             <span className="block mt-3 bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent">
@@ -142,11 +145,10 @@ export default function Landing() {
 
           {/* Subheadline */}
           <p
-            className={`text-xl sm:text-2xl mb-12 text-gray-100 max-w-2xl mx-auto leading-relaxed font-light transition-all duration-1000 delay-300 ${
-              isVisible
+            className={`text-xl sm:text-2xl mb-12 text-gray-100 max-w-2xl mx-auto leading-relaxed font-light transition-all duration-1000 delay-300 ${isVisible
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-4"
-            }`}
+              }`}
           >
             Discover extraordinary dining experiences from local favorites to
             hidden gems, all at your fingertips.
@@ -154,11 +156,10 @@ export default function Landing() {
 
           {/* Trust Indicators with Icon Enhancement */}
           <div
-            className={`flex flex-wrap justify-center gap-8 text-white/90 text-sm transition-all duration-1000 delay-700 ${
-              isVisible
+            className={`flex flex-wrap justify-center gap-8 text-white/90 text-sm transition-all duration-1000 delay-700 ${isVisible
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-4"
-            }`}
+              }`}
           >
             <div className="flex items-center gap-2.5 bg-white/5 backdrop-blur-sm px-4 py-2.5 rounded-full border border-white/10">
               <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center">
@@ -320,27 +321,33 @@ export default function Landing() {
       </section>
 
       {/* ================= HOW IT WORKS ================= */}
-      <section id="how-it-works" className="py-28 px-6 bg-white relative overflow-hidden">
-        {/* Subtle background decoration */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-red-50/30 to-transparent pointer-events-none" />
-        
+      <section
+        id="how-it-works"
+        className="relative py-28 px-6 bg-[#0b0b0f] text-slate-200 overflow-hidden"
+      >
+        {/* neon glow background */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(239,68,68,0.18),transparent_70%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-red-900/20 to-transparent pointer-events-none" />
+
         <div className="max-w-6xl mx-auto relative">
+          {/* heading */}
           <div className="text-center mb-20">
-            <div className="inline-block mb-4">
-              <span className="text-red-600 font-semibold text-sm uppercase tracking-wider">Process</span>
-            </div>
-            <h2 className="text-4xl sm:text-5xl font-bold mb-5 text-gray-900 leading-tight">
+            <span className="inline-block mb-3 px-4 py-1 rounded-full bg-red-500/10 text-red-400 font-semibold text-xs uppercase tracking-widest border border-red-500/20">
+              Process
+            </span>
+
+            <h2 className="text-4xl sm:text-5xl font-bold mb-5 text-white leading-tight">
               Getting started is easy
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-lg sm:text-xl text-slate-400">
               Your perfect meal is just three steps away
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-16 relative">
-            {/* Connection Lines (Desktop) */}
-            <div className="hidden md:block absolute top-12 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-red-200 to-transparent" />
-            
+          <div className="relative grid md:grid-cols-3 gap-16">
+            {/* glowing connector line */}
+            <div className="hidden md:block absolute top-14 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500/40 to-transparent blur-md" />
+
             {[
               {
                 step: "01",
@@ -360,26 +367,38 @@ export default function Landing() {
                 desc: "Track your order in real-time and enjoy hot, fresh food at your door",
                 icon: "😋",
               },
-            ].map((item, index) => (
-              <div key={item.step} className="text-center group relative">
+            ].map((item) => (
+              <div
+                key={item.step}
+                className="group text-center relative transition-transform hover:-translate-y-2"
+              >
+                {/* glass glow */}
+                <div className="absolute -inset-6 rounded-3xl bg-red-500/10 blur-2xl opacity-0 group-hover:opacity-100 transition duration-500" />
+
                 <div className="relative mb-8">
-                  <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-5xl shadow-xl group-hover:shadow-2xl group-hover:shadow-red-500/30 group-hover:scale-110 transition-all duration-500 relative z-10">
+                  {/* icon orb */}
+                  <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-5xl shadow-[0_0_30px_rgba(239,68,68,0.5)] group-hover:scale-110 transition-all duration-500 relative z-10">
                     {item.icon}
                   </div>
-                  {/* Step Number Badge */}
-                  <div className="absolute -top-3 -right-3 w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center font-bold text-red-600 border-2 border-red-100 group-hover:scale-110 transition-transform duration-500 z-20">
+
+                  {/* step badge */}
+                  <div className="absolute -top-3 -right-3 w-14 h-14 rounded-full bg-[#111] shadow-lg flex items-center justify-center font-bold text-red-400 border border-red-500/30 group-hover:scale-110 transition-transform duration-300 z-20">
                     {item.step}
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-900 group-hover:text-red-600 transition-colors duration-300">
+
+                <h3 className="text-2xl font-bold mb-4 text-white group-hover:text-red-400 transition-colors duration-300">
                   {item.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed text-[15px] max-w-xs mx-auto">{item.desc}</p>
+                <p className="text-slate-400 leading-relaxed text-[15px] max-w-xs mx-auto">
+                  {item.desc}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
+
 
       {/* ================= STATS ================= */}
       <section className="py-24 px-6 bg-gradient-to-br from-red-600 via-red-500 to-orange-500 relative overflow-hidden">
@@ -387,7 +406,7 @@ export default function Landing() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
-        
+
         <div className="max-w-6xl mx-auto relative">
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-12 text-center text-white">
             {[
@@ -415,7 +434,7 @@ export default function Landing() {
           <div className="bg-white rounded-[2rem] shadow-xl p-12 md:p-20 border border-gray-100 relative overflow-hidden group">
             {/* Subtle hover effect */}
             <div className="absolute inset-0 bg-gradient-to-br from-red-50/50 to-orange-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-            
+
             <div className="relative">
               <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-gray-900 leading-tight">
                 Ready to satisfy your cravings?
@@ -465,3 +484,5 @@ export default function Landing() {
     </div>
   );
 }
+
+
