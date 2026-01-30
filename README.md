@@ -457,9 +457,10 @@ Fast Food, Street Food, Beverages, Hot Beverages, Cold Beverages, Dessert, Baker
 
 ## 👨‍💻 Author
 
-**Yash M**
-- GitHub: [@yashm](https://github.com)
-- Email: yash@example.com
+**Ashutosh Mishra**
+- GitHub: [@ashutosh](https://github.com/mishraashutosh25/Eatonic)
+- Email:ashutoshmishra.dev25@gmail.com
+
 
 ---
 
