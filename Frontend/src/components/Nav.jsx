@@ -5,13 +5,18 @@ import { FaCartPlus } from "react-icons/fa6";
 import { RxCross1 } from "react-icons/rx";
 import { useSelector, useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice";
+import { setmyShopData } from "../redux/ownerSlice";
 import axios from "axios";
 import { FiPlus } from "react-icons/fi";
+import { HiOutlineShoppingBag } from "react-icons/hi";
+
+
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function Nav() {
   const userData = useSelector(state => state.user.userData);
+  const { myShopData } = useSelector((state) => state.owner ||{});
   const city = useSelector(state => state.user.city);
   const dispatch = useDispatch();
 
@@ -103,35 +108,46 @@ function Nav() {
 
           {/* Cart */}
           {userData.role == "user" && (<div className="relative cursor-pointer">
-            <FaCartPlus size={26} className="text-red-500" />
-            <span className="absolute -top-2 -right-2 text-[10px]
-              bg-red-500 text-white px-[5px] rounded-full">
+            <FaCartPlus size={26} className="text-[#C90808]" />
+            <span className="absolute -top-2 -right-2 text-[12px]
+              bg-[#C90808] text-white px-[5px] rounded-full">
               0
             </span>
           </div>)}
-          {userData.role == "owner" ? (
+          {userData.role == "owner" ?
             <>
-              <button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#ff4d2d]">
+            {myShopData && <><button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#C90808] font-medium">
                 <FiPlus size={24} />
                 <span>Add Food Item</span>
               </button>
-              <button className="md:hidden flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#ff4d2d]">
+              <button className="md:hidden flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#C90808]">
                 <FiPlus size={24} />
+              </button></> }
+              
+              <div className="hidden md:flex items-center gap-1 cursor-pointer relative px-2 py-1 rounded-lg bg-[#C90808]/10 text-[#C90808] font-medium">
+                <HiOutlineShoppingBag size={24} className="text-[#C90808]" />
+                <span>My Order</span>
+                <span className=" absolute -top-2 -right-2 text-[12px]
+              bg-[#C90808] text-white px-[5px] rounded-full">0</span>
+              </div>
+              <div className="md:hidden flex items-center gap-1 cursor-pointer relative px-2 py-1 rounded-lg bg-[#C90808]/10 text-[#C90808] font-medium">
+                <HiOutlineShoppingBag size={24} className="text-[#C90808]" />
+                <span className=" absolute -top-2 -right-2 text-[12px]
+              bg-[#C90808] text-white px-[5px] rounded-full">0</span>
+              </div>
+            </>
+            : (
+              <button className="hidden md:flex text-left px-2.5 py-2.5 bg-[#C90808] text-sm text-color-white-500 cursor-pointer rounded-lg">
+                📦 My Orders
               </button>
 
-            </>
-          ) : (
-            <button className="md:hidden md:flex text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">
-              📦 My Orders
-            </button>
-
-          )}
+            )}
 
 
           {/* Avatar */}
           <div
             onClick={() => setProfileOpen(!profileOpen)}
-            className="w-9 h-9 rounded-full bg-orange-500 text-white
+            className="w-9 h-9 rounded-full bg-[#C90808] text-white
               flex items-center justify-center font-semibold cursor-pointer">
             {userData?.fullname?.[0] || "U"}
           </div>

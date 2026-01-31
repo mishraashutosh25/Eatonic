@@ -12,10 +12,12 @@ import useGetCity from "./hooks/useGetCity";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
+import useGetMyShop from "./hooks/useGetMyShop";
 
 function App() {
   useGetCurrentUser();
   useGetCity();
+  useGetMyShop
 
   const [theme, setTheme] = useState(
     localStorage.getItem("theme") || "light"
