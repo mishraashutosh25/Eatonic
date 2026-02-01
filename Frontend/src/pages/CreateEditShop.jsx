@@ -82,16 +82,41 @@ const { MyShopData, city, state, address } = owner || {};
           <span>Back</span>
         </div>
       </div>
+        {/* Main Card */}
+    <div className="w-full max-w-5xl bg-white/70 backdrop-blur-xl shadow-2xl rounded-3xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
 
-      <div className="max-w-lg w-full bg-white shadow-xl rounded-2xl p-8">
-        <div className="flex flex-col items-center mb-6">
-          <div className="bg-[#ED9BA2] p-4 rounded-full mb-4">
-            <GiHotMeal className="w-14 h-14 text-[#990606]" />
-          </div>
-          <div className="text-3xl font-bold text-gray-900">
-            {MyShopData ? "Edit Shop" : "Add Shop"}
-          </div>
+      {/* LEFT IMAGE PANEL */}
+      <div className="relative hidden md:flex items-center justify-center bg-gradient-to-br from-rose-400 to-orange-400">
+        <img
+          src="https://i.pinimg.com/1200x/12/9e/0e/129e0e300d2a62268909753b763a7fd6.jpg"
+          alt="food"
+          className="absolute inset-0 w-full h-full object-cover opacity-80"
+        />
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="relative z-10 text-white text-center p-10">
+          <h2 className="text-4xl font-extrabold mb-3">Grow Your Kitchen</h2>
+          <p className="text-sm opacity-90">
+            Create your digital storefront in a few steps.
+          </p>
         </div>
+      </div>
+
+      {/* RIGHT FORM */}
+      <div className="p-10">
+        <div className="flex flex-col items-center mb-6">
+          <div className="bg-[#ED9BA2]   p-4 rounded-full mb-4 shadow-xl">
+            <GiHotMeal className="w-12 h-12 text-[#990606]" />
+          </div>
+          <h2 className="text-4xl font-semibold text-gray-900">
+            {MyShopData ? "Edit Shop" : "Add Shop"}
+          </h2>
+          <p className="text-sm text-gray-500">
+            Tell customers about your shop
+          </p>
+        </div>
+
+      
+       
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
@@ -162,6 +187,8 @@ const { MyShopData, city, state, address } = owner || {};
         </form>
       </div>
     </div>
+    </div>
+    
   );
 }
 
