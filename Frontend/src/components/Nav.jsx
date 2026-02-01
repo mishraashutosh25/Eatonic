@@ -5,7 +5,7 @@ import { FaCartPlus } from "react-icons/fa6";
 import { RxCross1 } from "react-icons/rx";
 import { useSelector, useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice";
-import { setmyShopData } from "../redux/ownerSlice";
+import { setMyShopData } from "../redux/ownerSlice";
 import axios from "axios";
 import { FiPlus } from "react-icons/fi";
 import { HiOutlineShoppingBag } from "react-icons/hi";
@@ -16,7 +16,7 @@ const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function Nav() {
   const userData = useSelector(state => state.user.userData);
-  const { myShopData } = useSelector((state) => state.owner ||{});
+  const { MyShopData } = useSelector((state) => state.owner ||{});
   const city = useSelector(state => state.user.city);
   const dispatch = useDispatch();
 
@@ -116,7 +116,7 @@ function Nav() {
           </div>)}
           {userData.role == "owner" ?
             <>
-            {myShopData && <><button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#C90808] font-medium">
+            {MyShopData && <><button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#C90808] font-medium">
                 <FiPlus size={24} />
                 <span>Add Food Item</span>
               </button>
