@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   userData: null,
-  city: null
+  currentCity: null
 };
 
 const userSlice = createSlice({
@@ -12,11 +12,11 @@ const userSlice = createSlice({
     setUserData: (state, action) => {
       state.userData = action.payload;
     },
-    setcity: (state, action) => {
-      state.city = action.payload;
+    setCurrentCity: (state, action) => {
+      state.currentCity = action.payload;
     }
   }
 });
 
-export const { setUserData, setcity } = userSlice.actions;
+export const { setUserData, setCurrentCity } = userSlice.actions;
 export default userSlice.reducer;

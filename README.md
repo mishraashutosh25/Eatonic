@@ -49,13 +49,16 @@ Traditional food delivery and restaurant management systems lack integrated solu
 - 🏢 Create and manage restaurant profile with image upload
 - 📝 Add, edit, and manage food items
 - 📊 Dashboard for order management
-- 🚀 Real-time inventory updates
+- � Accept/reject orders and update status
+- 👨‍💼 Assign delivery personnel to orders
+- �🚀 Real-time inventory updates
 - 📸 Image upload via Cloudinary CDN
 
 ### Delivery Personnel Features
-- 📦 View assigned deliveries
-- 🗺️ Track delivery status
-- ✅ Mark orders as delivered
+- 📦 View assigned deliveries and order details
+- 🗺️ Track delivery status and update progress
+- ✅ Mark orders as delivered with confirmation
+- 📍 Access delivery address and customer details
 - 📊 Delivery analytics dashboard
 
 ### Admin & Security Features
@@ -95,7 +98,7 @@ Traditional food delivery and restaurant management systems lack integrated solu
 
 ### Database
 - **Primary:** MongoDB (Cloud or Local)
-- **Collections:** Users, Shops, Items
+- **Collections:** Users, Shops, Items, Orders
 
 ### APIs & Services
 - **Google OAuth:** Firebase Authentication
@@ -129,7 +132,10 @@ Eatonic/
 │   │   │   └── useGetCity.jsx              # Get user's current city
 │   │   ├── redux/
 │   │   │   ├── store.js                    # Redux store configuration
-│   │   │   └── userSlice.js                # User state management
+│   │   │   ├── userSlice.js                # User state management
+│   │   │   └── orderSlice.js               # Order state management
+│   │   ├── services/
+│   │   │   └── orderAPI.js                 # Order API service
 │   │   ├── assets/                         # Images, fonts, static files
 │   │   ├── App.jsx                         # Main app component
 │   │   ├── main.jsx                        # React entry point
@@ -148,16 +154,19 @@ Eatonic/
 │   │   ├── auth.controllers.js             # Authentication logic
 │   │   ├── user.controllers.js             # User operations
 │   │   ├── shop.controllers.js             # Shop operations
-│   │   └── item.controllers.js             # Item operations
+│   │   ├── item.controllers.js             # Item operations
+│   │   └── order.controllers.js            # Order operations
 │   ├── models/
 │   │   ├── user.model.js                   # User schema
 │   │   ├── shop.model.js                   # Shop schema
-│   │   └── item.model.js                   # Item schema
+│   │   ├── item.model.js                   # Item schema
+│   │   └── order.model.js                  # Order schema
 │   ├── routes/
 │   │   ├── auth.routes.js                  # Auth endpoints
 │   │   ├── user.routes.js                  # User endpoints
 │   │   ├── shop.routes.js                  # Shop endpoints
-│   │   └── item.routes.js                  # Item endpoints
+│   │   ├── item.routes.js                  # Item endpoints
+│   │   └── order.routes.js                 # Order endpoints
 │   ├── middlewares/
 │   │   ├── isAuth.js                       # JWT authentication middleware
 │   │   └── multer.js                       # File upload configuration
@@ -378,6 +387,88 @@ VITE_API_BASE_URL=http://localhost:8000/api
 **Available Food Categories:**
 Fast Food, Street Food, Beverages, Hot Beverages, Cold Beverages, Dessert, Bakery, Snacks, Breakfast, Lunch, South Indian, North Indian, Chinese, Italian, Continental, Healthy Food, Salads, Biryani, Rolls, Pizza, Burger, Sandwich, Others
 
+### Order (`/api/order`)
+
+| Method | Endpoint | Description | Auth | Role |
+|--------|----------|-------------|------|------|
+| POST | `/create` | Create new order | ✅ | User |
+| GET | `/user` | Get user's order history | ✅ | User |
+| GET | `/:orderId` | Get single order by ID | ✅ | User/Owner/DeliveryBoy |
+| GET | `/owner/all-orders` | Get orders for owner's shop | ✅ | Owner |
+| GET | `/delivery/assigned-orders` | Get assigned deliveries | ✅ | DeliveryBoy |
+| PATCH | `/:orderId/status` | Update order status | ✅ | Owner/DeliveryBoy |
+| POST | `/assign-delivery` | Assign delivery boy to order | ✅ | Owner |
+
+**Create Order Request:**
+```javascript
+POST /api/order/create
+{
+  "items": [
+    { "itemId": "item_id_1", "quantity": 2 },
+    { "itemId": "item_id_2", "quantity": 1 }
+  ],
+  "shopId": "shop_id",
+  "deliveryAddress": "123 Main Street, City, State 12345",
+  "notes": "Extra spicy please"
+}
+```
+
+**Update Order Status Request:**
+```javascript
+PATCH /api/order/:orderId/status
+{
+  "status": "accepted" // pending, accepted, preparing, picked, delivered, cancelled
+}
+```
+
+**Assign Delivery Boy Request:**
+```javascript
+POST /api/order/assign-delivery
+{
+  "orderId": "order_id",
+  "deliveryBoyId": "user_id"
+}
+```
+
+**Order Response Schema:**
+```javascript
+{
+  "_id": "order_id",
+  "user": {
+    "_id": "user_id",
+    "fullname": "John Doe",
+    "email": "john@example.com",
+    "mobile": "9876543210"
+  },
+  "shop": {
+    "_id": "shop_id",
+    "name": "Pizza Palace",
+    "city": "Mumbai",
+    "address": "123 Main Street"
+  },
+  "items": [
+    {
+      "item": {
+        "_id": "item_id",
+        "name": "Margherita Pizza",
+        "price": 299,
+        "category": "Pizza"
+      },
+      "quantity": 2,
+      "price": 299
+    }
+  ],
+  "totalAmount": 598,
+  "paymentStatus": "pending", // pending, completed, failed
+  "orderStatus": "pending", // pending, accepted, preparing, picked, delivered, cancelled
+  "deliveryAddress": "123 Main Street, City",
+  "deliveryBoy": null,
+  "notes": "Extra spicy",
+  "createdAt": "2024-02-07T10:30:00Z",
+  "updatedAt": "2024-02-07T10:30:00Z"
+}
+```
+
 ---
 
 ## 🏗️ Project Architecture
@@ -435,13 +526,26 @@ Fast Food, Street Food, Beverages, Hot Beverages, Cold Beverages, Dessert, Baker
 - Shop reference
 - Image (via Cloudinary)
 
+**Order Collection:**
+- User reference (customer)
+- Shop reference (restaurant)
+- Items array (with quantity and price)
+- Total amount
+- Payment status (pending, completed, failed)
+- Order status (pending, accepted, preparing, picked, delivered, cancelled)
+- Delivery boy assignment (optional)
+- Delivery address
+- Special notes
+- Timestamps
+
 ---
 
 ## 🔮 Future Improvements
 
-- [ ] **Order Management** - Implement complete order placement and tracking
+- [x] **Order Management** - Complete order placement, tracking, and status updates
 - [ ] **Payment Integration** - Add Stripe/Razorpay for payments
 - [ ] **Real-time Updates** - WebSocket integration for live order updates
+- [ ] **Email Notifications** - Order confirmation and status update emails
 - [ ] **Reviews & Ratings** - User ratings for shops and items
 - [ ] **Search & Filters** - Advanced search with filters (price, ratings, distance)
 - [ ] **Order History** - User order history and repeat ordering

@@ -17,7 +17,7 @@ export const addItem = async (req, res) => {
                 const item = await Item.create({
                         name, category, foodType, price, image, shop: shop._id
                 })
-                return res.status(201).json(item)
+                return res.status(201).json(shop)
         } catch (error) {
                 return res.status(500).json({message: `add item eroor ${error}`})
         }

@@ -16,8 +16,8 @@ const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function Nav() {
   const userData = useSelector(state => state.user.userData);
-  const { MyShopData } = useSelector((state) => state.owner ||{});
-  const city = useSelector(state => state.user.city);
+  const { myShopData } = useSelector((state) => state.owner || {});
+  const currentCity  = useSelector(state => state.user.currentCity);
   const dispatch = useDispatch();
 
   const [profileOpen, setProfileOpen] = useState(false);
@@ -42,7 +42,7 @@ function Nav() {
 
           <div className="flex items-center w-[30%] gap-2 border-r border-gray-300">
             <IoLocationOutline size={22} className="text-[#ff4d2d]" />
-            <span className="truncate text-gray-600 text-sm">{city || "Detecting..."}</span>
+            <span className="truncate text-gray-600 text-sm">{currentCity || "Detecting..."}</span>
           </div>
 
           <div className="flex items-center w-[60%] gap-2">
@@ -79,7 +79,7 @@ function Nav() {
 
           <div className="flex items-center w-[30%] gap-2 border-r border-gray-300">
             <IoLocationOutline size={22} className="text-red-600" />
-            <span className="truncate text-gray-700 font-semibold">{city || "Detecting..."}
+            <span className="truncate text-gray-700 font-semibold">{currentCity || "Detecting..."}
             </span>
           </div>
 
@@ -116,13 +116,13 @@ function Nav() {
           </div>)}
           {userData.role == "owner" ?
             <>
-            {MyShopData && <><button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#C90808] font-medium">
+            {myShopData && (<><button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#C90808] font-medium">
                 <FiPlus size={24} />
                 <span>Add Food Item</span>
               </button>
               <button className="md:hidden flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#C90808]">
                 <FiPlus size={24} />
-              </button></> }
+              </button></>) }
               
               <div className="hidden md:flex items-center gap-1 cursor-pointer relative px-2 py-1 rounded-lg bg-[#C90808]/10 text-[#C90808] font-medium">
                 <HiOutlineShoppingBag size={24} className="text-[#C90808]" />

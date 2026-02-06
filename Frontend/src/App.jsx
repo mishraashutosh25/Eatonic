@@ -15,6 +15,7 @@ import useGetMyShop from "./hooks/useGetMyShop";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
+import AddItem from "./pages/AddItem";
 
 function App() {
   // 🔥 bas call karo
@@ -78,6 +79,13 @@ function App() {
         path="/create-edit-shop"
         element={
           userData ? <CreateEditShop /> : <Navigate to="/signin" replace />
+        }
+      />
+
+      <Route
+        path="/add-food"
+        element={
+          userData ? <AddItem /> : <Navigate to="/signin" replace />
         }
       />
     </Routes>
