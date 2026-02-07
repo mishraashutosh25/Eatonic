@@ -5,10 +5,11 @@ import { FaCartPlus } from "react-icons/fa6";
 import { RxCross1 } from "react-icons/rx";
 import { useSelector, useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice";
-import { setMyShopData } from "../redux/ownerSlice";
 import axios from "axios";
+import { IoLogOutOutline } from "react-icons/io5";
 import { FiPlus } from "react-icons/fi";
 import { HiOutlineShoppingBag } from "react-icons/hi";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -17,9 +18,9 @@ const serverUrl = import.meta.env.VITE_SERVER_URL;
 function Nav() {
   const userData = useSelector(state => state.user.userData);
   const { myShopData } = useSelector((state) => state.owner || {});
-  const currentCity  = useSelector(state => state.user.currentCity);
+  const currentCity = useSelector(state => state.user.currentCity);
   const dispatch = useDispatch();
-
+  const navigate=useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
@@ -116,14 +117,14 @@ function Nav() {
           </div>)}
           {userData.role == "owner" ?
             <>
-            {myShopData && (<><button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#C90808] font-medium">
+              {myShopData && (<><button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#C90808] font-medium" onClick={()=>navigate("/add-food")}>
                 <FiPlus size={24} />
                 <span>Add Food Item</span>
               </button>
-              <button className="md:hidden flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#C90808]">
-                <FiPlus size={24} />
-              </button></>) }
-              
+                <button className="md:hidden flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#C90808]"onClick={()=>navigate("/add-food")}>
+                  <FiPlus size={24} />
+                </button></>)}
+
               <div className="hidden md:flex items-center gap-1 cursor-pointer relative px-2 py-1 rounded-lg bg-[#C90808]/10 text-[#C90808] font-medium">
                 <HiOutlineShoppingBag size={24} className="text-[#C90808]" />
                 <span>My Order</span>
@@ -154,8 +155,7 @@ function Nav() {
 
           {/* Profile Dropdown */}
           {profileOpen && (
-            <div className="absolute right-0 top-14 w-56 bg-white
-              rounded-xl shadow-lg border overflow-hidden">
+            <div className="absolute right-0 top-14 w-56 bg-white rounded-xl shadow-lg border overflow-hidden z-[9999]">
 
               <div className="px-4 py-3 border-b">
                 <p className="font-semibold">
@@ -166,14 +166,28 @@ function Nav() {
                 </p>
               </div>
 
+              {/* ===== My Orders (USER only) ===== */}
+              {userData?.role === "user" && (
+                <button
+                  onClick={() => {
+                    setProfileOpen(false);
+                    // navigate("/my-orders") // jab route ready ho
+                  }}
+                  className="w-full flex items-center gap-2 px-4 py-2 cursor-pointer font-bold text-[#990315] md:hidden">
+                  <HiOutlineShoppingBag size={18} />
+                  <span>My Orders</span>
+                </button>
+              )}
+
               <button
                 onClick={handleLogOut}
-                className="w-full text-left px-4 py-2 text-sm
-                  text-red-600 hover:bg-red-50 cursor-pointer">
-                🚪 Logout
+                className="w-full flex items-center gap-2 px-4 py-2 text-sm font-bold text-[#990315] cursor-pointer">
+                <IoLogOutOutline size={18} />
+                <span>Logout</span>
               </button>
             </div>
           )}
+
         </div>
       </nav>
     </>

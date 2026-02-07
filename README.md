@@ -54,6 +54,27 @@ Traditional food delivery and restaurant management systems lack integrated solu
 - �🚀 Real-time inventory updates
 - 📸 Image upload via Cloudinary CDN
 
+#### Owner Dashboard
+
+- **Purpose:** A centralized control panel for restaurant owners to manage shop profile, items, orders, deliveries, and performance metrics from one place.
+- **Key UI components:** `OwnerDashboard.jsx`, `OwnerItemCard.jsx`, `CreateEditShop.jsx`, order detail modal, notifications panel.
+- **Order management:** Live order feed with filters (new, pending, preparing, picked, delivered, cancelled), ability to accept/reject orders, batch update statuses, view order itemization and customer contact, and assign/reassign delivery personnel.
+- **Inventory & availability:** At-a-glance inventory levels for each item or variant, manual availability toggles, scheduling (set item availability windows), low-stock thresholds and automatic low-stock alerts.
+- **Shop settings:** Edit shop profile (images, address, city/state, operating hours), open/close toggle, delivery settings, and contact information.
+- **Analytics & reports:** Sales summary (daily/weekly/monthly), top-selling items, order volume trends, revenue breakdown by item/category, and exportable CSV reports for bookkeeping.
+- **Notifications & integrations:** Email/SMS or in-app notifications for new orders, low stock, and failed payments; optional webhook or WebSocket hooks for real-time updates.
+
+#### Item Management
+
+- **Purpose:** Tools for creating, editing, organizing, and monitoring menu items with support for images, categories, variants, and inventory tracking.
+- **Item CRUD:** `AddItem.jsx` and `EditItem.jsx` provide fields for name, description, price, category, food type (Veg/Non-Veg/Vegan), images (Cloudinary), SKU/variant support, and availability toggles.
+- **Variants & modifiers:** Support item variants (size, spice level) and add-on modifiers with independent pricing and stock tracking per variant.
+- **Inventory controls:** Track stock quantity per item/variant, set low-stock thresholds, schedule out-of-stock windows, and mark items temporarily unavailable.
+- **Pricing & promotions:** Base price, discount fields, percentage or fixed-price promotions, and the ability to schedule promotional pricing windows.
+- **Bulk operations:** CSV import/export for items, bulk price updates, and bulk availability toggles to speed up management during busy periods.
+- **Image handling & preview:** Client-side compression/validation + Cloudinary upload; preview images in `OwnerItemCard.jsx` before publishing.
+- **Validation & UX:** Client- and server-side validation for required fields (name, price, category), clear success/error feedback, and optimistic UI updates for a responsive owner experience.
+- **Related API endpoints:** `POST /api/item/add-item`, `POST /api/item/edit-item/:itemId`, `GET /api/shop/:shopId/items` (owner-scoped access enforced by `isAuth` and role checks).
 ### Delivery Personnel Features
 - 📦 View assigned deliveries and order details
 - 🗺️ Track delivery status and update progress

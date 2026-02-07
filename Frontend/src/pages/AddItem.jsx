@@ -5,6 +5,7 @@ import { IoIosArrowRoundBack } from "react-icons/io";
 import { GiHotMeal } from "react-icons/gi";
 import axios from "axios";
 import { setMyShopData } from "../redux/ownerSlice";
+import { ClipLoader } from "react-spinners";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -18,6 +19,7 @@ function AddItem() {
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [foodType, setFoodType] = useState("Veg");
+  const [loading, setLoading] = useState(false);
 
   const [frontendImage, setFrontendImage] = useState(null);
   const [backendImage, setBackendImage] = useState(null);
@@ -66,6 +68,8 @@ function AddItem() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;   //double submit guard
+    setLoading(true);
 
     try {
       const formData = new FormData();
@@ -85,12 +89,21 @@ function AddItem() {
       );
 
       dispatch(setMyShopData(res.data));
+      setLoading(false)
       navigate("/home")
-      console.log(res.data)
     } catch (error) {
       console.error(error);
+      setLoading(false)
     }
   };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();     // default behaviour rok do
+      handleSubmit(e);        // manually submit
+    }
+  };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-zinc-50 px-6 py-20">
@@ -120,8 +133,8 @@ function AddItem() {
           <div className="relative z-10 text-white text-center p-10">
             <h2 className="text-4xl font-extrabold mb-3">Every Recipe Has a Story</h2>
             <p className="text-sm opacity-90">
-               Bring your kitchen online and reach hungry customers around you.
-  Add your dishes, set your price, and let your food speak for itself.
+              Bring your kitchen online and reach hungry customers around you.
+              Add your dishes, set your price, and let your food speak for itself.
             </p>
           </div>
         </div>
@@ -135,7 +148,9 @@ function AddItem() {
             <h2 className="text-3xl font-semibold">Add Food Item</h2>
           </div>
 
-          <form className="space-y-5" onSubmit={handleSubmit}>
+          <form className="space-y-5"
+            onSubmit={handleSubmit}
+            onKeyDown={handleKeyDown}>
 
             <div>
               <label className="block text-sm font-medium mb-1">Food Name</label>
@@ -208,8 +223,8 @@ function AddItem() {
             <button
               type="submit"
               className="w-full bg-[#D40425] text-white py-3 rounded-lg font-semibold hover:opacity-90"
-            >
-              Save Item
+              disabled={loading}>
+              {loading ? <ClipLoader size={18} color="white" /> : "Save Item"}
             </button>
 
           </form>

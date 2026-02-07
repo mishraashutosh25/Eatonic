@@ -6,7 +6,7 @@ export const createEditShop = async (req, res) => {
   try {
     const { name, city, state, address } = req.body;
 
-    if (!name || !state || !address) {
+    if (!name || !city || !state || !address) {
       return res.status(400).json({ message: "Name, state and address are required" });
     }
 
@@ -31,7 +31,10 @@ export const createEditShop = async (req, res) => {
       );
     }
 
-    await shop.populate("owner,item");
+    await shop.populate([
+      { path: "owner" },
+      { path: "items" }
+    ]);
     return res.status(201).json(shop);
 
   } catch (error) {
@@ -43,15 +46,18 @@ export const createEditShop = async (req, res) => {
 };
 
 
-export const getMyShop= async(req,res)=>{
-  try{
-const shop=await Shop.findOne({owner:req.userId}).populate("owner items");
-if(!shop){
-  return null
-}
-return res.status(200).json(shop);
+export const getMyShop = async (req, res) => {
+  try {
+    const shop = await Shop.findOne({ owner: req.userId }).populate("owner").populate({
+      path:"items",
+      options:{sort:{updatedAt:-1}}
+    })
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+    return res.status(200).json(shop);
 
-  }catch(error){
+  } catch (error) {
     return res.status(500).json({
       message: "Get My Shop  error",
       error: error.message

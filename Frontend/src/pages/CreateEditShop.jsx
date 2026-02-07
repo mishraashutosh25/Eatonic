@@ -5,46 +5,70 @@ import { IoIosArrowRoundBack } from "react-icons/io";
 import { GiHotMeal } from "react-icons/gi";
 import axios from "axios";
 import { setMyShopData } from "../redux/ownerSlice";
+import { ClipLoader } from "react-spinners";
 
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function CreateEditShop() {
   const navigate = useNavigate();
-  const { MyShopData } = useSelector(state => state.owner ||"")
+  const { myShopData } = useSelector(state => state.owner ||{})
   const { currentAddress, currentState, currentCity } = useSelector(state => state.owner || {})
-  const [name, setName] = useState(MyShopData?.name || "")
-  const [address, setAddress] = useState(MyShopData?.adrress || currentAddress || "")
-  const [city, setCity] = useState(MyShopData?.city || currentCity || "")
-  const [state, setState] = useState(MyShopData?.state || currentState)
-  const [frontendImage, setFrontendImage]=useState(MyShopData?.image || null)
-    const [backendImage, setBackendImage]=useState(null)
-    const dispatch = useDispatch()
-  const handleImage=(e)=>{
-    const file=e.target.files[0]
+  const [name, setName] = useState(myShopData?.name || "")
+  const [address, setAddress] = useState(myShopData?.address || currentAddress || "")
+  const [city, setCity] = useState(myShopData?.city || currentCity || "")
+  const [state, setState] = useState(myShopData?.state || currentState)
+  const [frontendImage, setFrontendImage] = useState(myShopData?.image || null)
+  const [backendImage, setBackendImage] = useState(null)
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch()
+  const handleImage = (e) => {
+    const file = e.target.files[0]
     setBackendImage(file)
     setFrontendImage(URL.createObjectURL(file))
   }
 
-  const handleSubmit = async(e)=>{
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    try{
-const formData =new FormData()
-formData.append("name",name)
-formData.append("city",city)
-formData.append("state",state)
-formData.append("address",address)
-if(backendImage){
-  formData.append("image",backendImage)
-}
-const res=await axios.post(`${serverUrl}/api/shop/create-edit`,formData,
-  {withCredentials:true})
-  dispatch(setMyShopData(res.data))
-  console.log(res.data)
-    }catch(error){
-console.log(error)
+    if (loading) return;   // 👈 double submit guard
+    setLoading(true);
+    try {
+      const formData = new FormData()
+      formData.append("name", name)
+      formData.append("city", city || currentCity || "")
+      formData.append("state", state)
+      formData.append("address", address)
+      if (backendImage) {
+        formData.append("image", backendImage)
+      }
+      const res = await axios.post(`${serverUrl}/api/shop/create-edit`, formData,
+        { withCredentials: true })
+      dispatch(setMyShopData(res.data))
+      setLoading(false)
+      navigate("/home")
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
     }
   }
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();     // default behaviour rok do
+      handleSubmit(e);        // manually submit
+    }
+  };
+  useEffect(() => {
+  if (myShopData?.city) {
+    setCity(myShopData.city);
+  } else if (currentCity && !city) {
+    setCity(currentCity);
+  }
+}, [myShopData, currentCity]);
+
+  console.log("city:", city, "redux:", myShopData?.city, currentCity);
+
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-zinc-50 px-6 py-20 relative overflow-hidden">
 
@@ -83,7 +107,7 @@ console.log(error)
               <GiHotMeal className="w-12 h-12 text-[#990606]" />
             </div>
             <h2 className="text-4xl font-semibold text-gray-900">
-              {MyShopData ? "Edit Shop" : "Add Shop"}
+              {myShopData ? "Edit Shop" : "Add Shop"}
             </h2>
             <p className="text-sm text-gray-500">
               Tell customers about your shop
@@ -93,7 +117,9 @@ console.log(error)
 
 
 
-          <form className="space-y-5" onSubmit={handleSubmit}>
+          <form className="space-y-5"
+            onKeyDown={handleKeyDown}
+            onSubmit={handleSubmit}>
             <div>
               <label className="block text-sm font-medium mb-1">Name</label>
               <input
@@ -156,8 +182,12 @@ console.log(error)
               />
             </div>
 
-            <button className="w-full bg-[#D40425] text-white py-3 rounded-lg font-semibold cursor-pointer">
-              Save
+            <button type="submit" className="w-full bg-[#D40425] text-white py-3 rounded-lg font-semibold cursor-pointer"
+              disabled={loading}>
+              {loading ? <ClipLoader size={18} color="white" /> : myShopData
+                ? "Update Shop"
+                : "Save"}
+
             </button>
           </form>
         </div>
