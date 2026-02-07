@@ -26,28 +26,17 @@ function EditItem() {
 
         const categories = [
                 "Fast Food",
-                "Street Food",
-                "Beverages",
-                "Hot Beverages",
-                "Cold Beverages",
-                "Dessert",
                 "Bakery",
                 "Snacks",
-                "Breakfast",
-                "Lunch",
                 "South Indian",
                 "North Indian",
                 "Chinese",
-                "Italian",
-                "Continental",
-                "Healthy Food",
-                "Salads",
                 "Biryani",
                 "Rolls",
                 "Pizza",
                 "Burger",
                 "Sandwich",
-                "Others",
+                "Others"
         ];
 
         const handleImage = (e) => {
