@@ -2,7 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   userData: null,
-  currentCity: null
+  currentCity: null,
+  shopInMyCity:null,
+  itemsInMyCity:null
 };
 
 const userSlice = createSlice({
@@ -14,9 +16,16 @@ const userSlice = createSlice({
     },
     setCurrentCity: (state, action) => {
       state.currentCity = action.payload;
-    }
+    },
+  
+    setShopInMyCity: (state, action) => {
+      state.shopInMyCity = action.payload;
+    },
+     setItemsInMyCity: (state, action) => {
+      state.itemsInMyCity = action.payload;
+    },
   }
 });
 
-export const { setUserData, setCurrentCity } = userSlice.actions;
+export const { setUserData, setCurrentCity , setShopInMyCity, setItemsInMyCity } = userSlice.actions;
 export default userSlice.reducer;

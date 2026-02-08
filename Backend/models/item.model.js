@@ -53,7 +53,13 @@ const itemSchema = new mongoose.Schema(
     isAvailable: {
       type: Boolean,
       default: true
+    },
+    rating:{
+average:{type:Number,default:0},
+count:{type:Number,default:0}
+
     }
+
   },
   { timestamps: true }
 );

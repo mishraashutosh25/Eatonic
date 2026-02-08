@@ -17,12 +17,16 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import AddItem from "./pages/AddItem";
 import EditItem from "./pages/EditItem";
+import useGetShopByCity from "./hooks/useGetShopByCity";
+import useGetItemsByCity from "./hooks/useGetItemsByCity";
 
 function App() {
   // 🔥 bas call karo
   useGetCurrentUser();
   useGetCity();
-  useGetMyShop(); // 🔥 bracket lagana zaroori
+  useGetMyShop();
+  useGetShopByCity();
+  useGetItemsByCity(); // 🔥 bracket lagana zaroori
 
   // 🔥 Redux se user lo
   const userData = useSelector((state) => state.user.userData);
