@@ -20,8 +20,8 @@ const isAuth = (req, res, next) => {
     next();
   } catch (error) {
     return res
-      .status(500)
-      .json(`Authentication failed. Please try again later. ${error.message}`);
+      .status(401)
+      .json({ message: `Authentication failed. Token invalid or expired: ${error.message}` });
   }
 };
 

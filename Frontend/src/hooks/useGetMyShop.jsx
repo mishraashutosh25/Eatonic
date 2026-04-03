@@ -1,26 +1,38 @@
 import axios from "axios";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { setMyShopData } from "../redux/ownerSlice";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
-export default function useGetMyShop() {
+function useGetMyShop() {
   const dispatch = useDispatch();
-  const {userData}=useSelector(state=>state.user)
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchShop = async () => {
+      setLoading(true);
       try {
         const res = await axios.get(
           `${serverUrl}/api/shop/get-my`,
           { withCredentials: true }
         );
         dispatch(setMyShopData(res.data));
-      } catch (err) {
-        console.log(err);
+      } catch (error) {
+        if (error.response?.status === 404) {
+          dispatch(setMyShopData([]));
+        } else if (error.response?.status !== 401) {
+          console.error("Error fetching my shop:", error);
+        }
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchShop();
-  }, [userData]);
+  }, [dispatch]);
+
+  return { loading };
 }
+
+export default useGetMyShop;

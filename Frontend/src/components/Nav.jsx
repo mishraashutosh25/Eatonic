@@ -36,7 +36,7 @@ function Nav() {
   return (
     <>
       {/* ================= Mobile Search Overlay ================= */}
-      {mobileSearchOpen && userData.role == "user" && (
+      {mobileSearchOpen && userData?.role == "user" && (
         <div className="fixed top-[80px] left-[5%] w-[90%] h-[70px]
           bg-white shadow-xl rounded-lg flex items-center gap-4
           px-3 z-[9999] md:hidden">
@@ -75,7 +75,7 @@ function Nav() {
         </h1>
 
         {/* Desktop Search */}
-        {userData.role == "user" && (<div className="hidden md:flex w-[35%] h-[50px]
+        {userData?.role == "user" && (<div className="hidden md:flex w-[35%] h-[50px]
           bg-white rounded-lg shadow-sm items-center gap-4 px-3">
 
           <div className="flex items-center w-[30%] gap-2 border-r border-gray-300">
@@ -99,7 +99,7 @@ function Nav() {
         )}
         {/* Right Section */}
         <div className="flex items-center gap-6 relative">
-          {userData.role == "user" && (<IoMdSearch
+          {userData?.role == "user" && (<IoMdSearch
             size={24}
             className="text-red-500 cursor-pointer md:hidden"
             onClick={() => setMobileSearchOpen(true)}
@@ -108,14 +108,14 @@ function Nav() {
 
 
           {/* Cart */}
-          {userData.role == "user" && (<div className="relative cursor-pointer">
+          {userData?.role == "user" && (<div className="relative cursor-pointer">
             <FaCartPlus size={26} className="text-[#C90808]" />
             <span className="absolute -top-2 -right-2 text-[12px]
               bg-[#C90808] text-white px-[5px] rounded-full">
               0
             </span>
           </div>)}
-          {userData.role == "owner" ?
+          {userData?.role == "owner" ?
             <>
               {myShopData && (<><button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-xl bg-[#ff4d2d]/10 text-[#C90808] font-medium" onClick={()=>navigate("/add-food")}>
                 <FiPlus size={24} />
@@ -138,7 +138,8 @@ function Nav() {
               </div>
             </>
             : (
-              <button className="hidden md:flex text-left px-2.5 py-2.5 bg-[#C90808] text-sm text-color-white-500 cursor-pointer rounded-lg">
+              <button className="hidden md:flex text-left px-2.5 py-2.5 bg-[#C90808] text-sm text-color-white-500 cursor-pointer rounded-lg"
+                onClick={() => navigate("/my-orders")}>
                 📦 My Orders
               </button>
 
@@ -171,7 +172,7 @@ function Nav() {
                 <button
                   onClick={() => {
                     setProfileOpen(false);
-                    // navigate("/my-orders") // jab route ready ho
+                    navigate("/my-orders");
                   }}
                   className="w-full flex items-center gap-2 px-4 py-2 cursor-pointer font-bold text-[#990315] md:hidden">
                   <HiOutlineShoppingBag size={18} />

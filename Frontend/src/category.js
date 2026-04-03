@@ -9,17 +9,20 @@ import image8 from "./assets/image8.jpg"
 import image9 from "./assets/image9.jpg"
 import image10 from "./assets/image10.jpg"
 import image11 from "./assets/image11.jpg"
+import image12 from "./assets/image12.jpg"
 
 export const categories =[
         {"category":"Snacks","image":image3},
         {"category":"South Indian","image":image7},
         {"category":"North Indian","image":image9},
-        {"category":"Pizza","image":image6},
+        {"category":"Pizza","image":image8},
         {"category":"Burger","image":image1},
-        {"category":"Chinese","image":image3},
+        {"category":"Chinese","image":image6},
         {"category":"Biryani","image":image11},
-        {"category":"Roll","image":image5},
-        {"category":"Fast Food","image":image4},
-        {"category":"All","image":image7},
+        {"category":"Roll","image":image4},
+        {"category":"Aloo Jeera","image":image5},
         {"category":"Bakery","image":image10},
+        {"category":"Pasta","image":image2},
+        {"category":"Other","image":image12},
+
 ];

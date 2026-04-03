@@ -9,6 +9,48 @@ export default function Landing({ theme, setTheme }) {
   const [scrolled, setScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [prevSlide, setPrevSlide] = useState(0);
+
+  // Auto-playing slider for the Mockup Phone
+  const sliderItems = [
+    {
+      img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=2000&q=100&fit=crop",
+      title: "Double Cheese Burger",
+      time: "15-20 min",
+      price: "₹199",
+      rating: "4.9"
+    },
+    {
+      img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=2000&q=100&fit=crop",
+      title: "Cheesy Paneer Pizza",
+      time: "25-30 min",
+      price: "₹349",
+      rating: "4.8"
+    },
+    {
+      img: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=2000&q=100&fit=crop",
+      title: "Hot Steamed Momos",
+      time: "15-20 min",
+      price: "₹120",
+      rating: "4.9"
+    },
+    {
+      img: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=2000&q=100&fit=crop",
+      title: "Grilled Club Sandwich",
+      time: "10-15 min",
+      price: "₹180",
+      rating: "4.7"
+    },
+    {
+      img: "https://images.unsplash.com/photo-1576107222617-c31c5a01cb6b?w=2000&q=100&fit=crop",
+      title: "Crispy French Fries",
+      time: "10-15 min",
+      price: "₹99",
+      rating: "4.8"
+    }
+  ];
+
   useEffect(() => {
     // Stagger the hero animation for more drama
     const timer = setTimeout(() => setIsVisible(true), 100);
@@ -18,9 +60,19 @@ export default function Landing({ theme, setTheme }) {
     };
 
     window.addEventListener("scroll", handleScroll);
+
+    // Carousel Timer
+    const carouselTimer = setInterval(() => {
+      setCurrentSlide((prev) => {
+        setPrevSlide(prev);
+        return (prev + 1) % sliderItems.length;
+      });
+    }, 3500); // Change image every 3.5 seconds
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
       clearTimeout(timer);
+      clearInterval(carouselTimer);
     };
   }, []);
 
@@ -28,23 +80,18 @@ export default function Landing({ theme, setTheme }) {
     <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden">
       {/* ================= NAVBAR ================= */}
       <header
-        className={`fixed top-0 w-full z-50 transition-all duration-700 ${scrolled
-            ? "bg-white/90 backdrop-blur-xl shadow-sm border-b border-gray-100"
-            : "bg-transparent"
+        className={`fixed top-0 w-full z-50 transition-colors duration-300 ${scrolled
+          ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100"
+          : "bg-transparent border-b border-transparent"
           }`}
       >
-        <div className="max-w-7xl mx-auto flex justify-between items-center px-6 lg:px-8 py-4">
-          <Link to="/" className="group">
-            <h1
-              className={`text-3xl font-bold tracking-tight transition-all duration-500 ${scrolled
-                  ? "text-gray-900"
-                  : "text-white drop-shadow-lg"
-                }`}
-            >
-              Eatonic
-              <span className={`inline-block ml-1 transition-all duration-500 ${scrolled ? "text-red-600" : "text-red-400"
-                }`}>🍽️</span>
-            </h1>
+        <div className="max-w-7xl mx-auto flex justify-between items-center px-6 lg:px-8 h-16 md:h-[72px]">
+          <Link to="/" className="group flex items-center justify-center transition-opacity hover:opacity-80">
+            <img
+              src="/logo.png"
+              alt="Eatonic Logo"
+              className="h-10 md:h-12 w-auto object-contain drop-shadow-lg scale-[1.5] md:scale-[1.7] origin-left"
+            />
           </Link>
 
           <nav className="hidden md:flex items-center gap-10">
@@ -77,8 +124,8 @@ export default function Landing({ theme, setTheme }) {
             <Link
               to="/signup"
               className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-500 ${scrolled
-                  ? "bg-gradient-to-r from-orange-600 to-orange-600 text-white hover:shadow-lg hover:shadow-orange-600/30 hover:-translate-y-0.5"
-                  : "bg-white text-gray-900 hover:bg-white/90 shadow-lg"
+                ? "bg-gradient-to-r from-orange-600 to-orange-600 text-white hover:shadow-lg hover:shadow-orange-600/30 hover:-translate-y-0.5"
+                : "bg-white text-gray-900 hover:bg-white/90 shadow-lg"
                 }`}
             >
               Sign up
@@ -97,31 +144,36 @@ export default function Landing({ theme, setTheme }) {
       </header>
 
       {/* ================= HERO ================= */}
-      <section
-       className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Image with Parallax Effect */}
-        <div className="absolute inset-0">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&q=90')",
-              transform: "scale(1.1)",
-            }}
-          />
-          {/* Refined gradient overlay for better text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-900/75 via-gray-900/60 to-black/70" />
-          {/* Subtle vignette effect */}
-          <div className="absolute inset-0 bg-radial-gradient from-transparent via-transparent to-black/40" />
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Auto-Rotating Background Slider */}
+        <div className="absolute inset-0 bg-[#0a0a0a]">
+          {sliderItems.map((item, idx) => {
+             let zClass = "opacity-0 z-0";
+             if (idx === currentSlide) zClass = "opacity-100 z-20";
+             else if (idx === prevSlide) zClass = "opacity-100 z-10";
+
+             return (
+               <img
+                 key={idx}
+                 src={item.img}
+                 alt={item.title}
+                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[1200ms] ease-in-out ${zClass}`}
+               />
+             );
+          })}
+          {/* Lighter overlay just enough to read text without ruining the HD image */}
+          <div className="absolute inset-0 bg-black/40 z-20" />
+          {/* Subtle bottom gradient to blend cleanly */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#070707] via-transparent to-transparent z-20 opacity-60" />
         </div>
 
         {/* Hero Content with Staggered Animation */}
-        <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
+        <div className="relative z-30 text-center px-6 max-w-5xl mx-auto">
           {/* Badge */}
           <div
             className={`mb-8 inline-block transition-all duration-1000 delay-100 ${isVisible
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4"
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4"
               }`}
           >
             <span className="px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium shadow-xl inline-flex items-center gap-2">
@@ -133,8 +185,8 @@ export default function Landing({ theme, setTheme }) {
           {/* Main Headline */}
           <h1
             className={`text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 text-white leading-[1.1] transition-all duration-1000 delay-200 ${isVisible
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4"
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4"
               }`}
           >
             Craving something
@@ -143,11 +195,11 @@ export default function Landing({ theme, setTheme }) {
             </span>
           </h1>
 
-          {/* Subheadline */}
+          {/* Subheadline updated dynamically to describe the food! */}
           <p
             className={`text-xl sm:text-2xl mb-12 text-gray-100 max-w-2xl mx-auto leading-relaxed font-light transition-all duration-1000 delay-300 ${isVisible
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4"
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4"
               }`}
           >
             Discover extraordinary dining experiences from local favorites to
@@ -157,8 +209,8 @@ export default function Landing({ theme, setTheme }) {
           {/* Trust Indicators with Icon Enhancement */}
           <div
             className={`flex flex-wrap justify-center gap-8 text-white/90 text-sm transition-all duration-1000 delay-700 ${isVisible
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4"
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4"
               }`}
           >
             <div className="flex items-center gap-2.5 bg-white/5 backdrop-blur-sm px-4 py-2.5 rounded-full border border-white/10">
@@ -205,7 +257,7 @@ export default function Landing({ theme, setTheme }) {
         </div>
 
         {/* Refined Scroll Indicator */}
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2">
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-30">
           <div className="flex flex-col items-center gap-2 animate-bounce">
             <span className="text-white/60 text-xs uppercase tracking-wider font-medium">Scroll Down</span>
             <svg

@@ -23,6 +23,7 @@ function EditItem() {
         const [frontendImage, setFrontendImage] = useState("");
         const [backendImage, setBackendImage] = useState(null);
         const [loading, setLoading] = useState(false);
+        const [errorMsg, setErrorMsg] = useState("");
 
         const categories = [
                 "Fast Food",
@@ -82,7 +83,8 @@ function EditItem() {
                         navigate("/home")
                 } catch (error) {
                         console.error(error);
-                        setLoading(false)
+                        setErrorMsg(error?.response?.data?.message || "Failed to edit item. Please try again.");
+                        setLoading(false);
                 }
         };
 
@@ -173,6 +175,7 @@ function EditItem() {
                                                                 placeholder="Enter food name"
                                                                 value={name}
                                                                 onChange={(e) => setName(e.target.value)}
+                                                                required
                                                         />
                                                 </div>
 
@@ -201,6 +204,7 @@ function EditItem() {
                                                                 placeholder="₹0"
                                                                 value={price}
                                                                 onChange={(e) => setPrice(e.target.value)}
+                                                                required
                                                         />
                                                 </div>
 
@@ -210,6 +214,7 @@ function EditItem() {
                                                                 className="w-full px-4 py-2 border rounded-lg"
                                                                 value={category}
                                                                 onChange={(e) => setCategory(e.target.value)}
+                                                                required
                                                         >
                                                                 <option value="">Select Category</option>
                                                                 {categories.map((cate, index) => (
@@ -238,9 +243,8 @@ function EditItem() {
                                                         className="w-full bg-[#D40425] text-white py-3 rounded-lg font-semibold hover:opacity-90"
                                                         disabled={loading}>
                                                         {loading ? <ClipLoader size={18} color="white" /> : "Update Item"}
-
-
                                                 </button>
+                                                {errorMsg && <p className="text-red-500 text-center font-medium mt-2">{errorMsg}</p>}
 
                                         </form>
                                 </div>

@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { GiHotMeal } from "react-icons/gi";
 import axios from "axios";
 import { setMyShopData } from "../redux/ownerSlice";
 import { ClipLoader } from "react-spinners";
+import toast from "react-hot-toast";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function AddItem() {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
 
-  const { MyShopData } = useSelector((state) => state.owner || {});
+  const shopId = location.state?.shopId;
+
+  const { myShopData } = useSelector((state) => state.owner || {});
 
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [foodType, setFoodType] = useState("Veg");
@@ -62,7 +67,11 @@ function AddItem() {
 
     try {
       const formData = new FormData();
+      if (shopId) {
+        formData.append("shopId", shopId);
+      }
       formData.append("name", name);
+      formData.append("description", description);
       formData.append("price", Number(price));
       formData.append("category", category);
       formData.append("foodType", foodType);
@@ -79,10 +88,13 @@ function AddItem() {
 
       dispatch(setMyShopData(res.data));
       setLoading(false)
+      toast.success('🍽️ Item added successfully!')
       navigate("/home")
     } catch (error) {
       console.error(error);
-      setLoading(false)
+      const msg = error?.response?.data?.message || "Failed to add item. Please try again.";
+      toast.error(msg)
+      setLoading(false);
     }
   };
 
@@ -149,7 +161,21 @@ function AddItem() {
                 placeholder="Enter food name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                required
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Description <span className="text-gray-400 font-normal">(optional)</span></label>
+              <textarea
+                className="w-full px-4 py-2 border rounded-lg resize-none text-sm"
+                placeholder="e.g. Crispy fried chicken with special spice blend..."
+                rows={2}
+                maxLength={200}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+              <p className="text-xs text-gray-400 text-right mt-0.5">{description.length}/200</p>
             </div>
 
             <div>
@@ -177,6 +203,7 @@ function AddItem() {
                 placeholder="₹0"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
+                required
               />
             </div>
 
@@ -186,6 +213,7 @@ function AddItem() {
                 className="w-full px-4 py-2 border rounded-lg"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
+                required
               >
                 <option value="">Select Category</option>
                 {categories.map((cate, index) => (
@@ -215,6 +243,7 @@ function AddItem() {
               disabled={loading}>
               {loading ? <ClipLoader size={18} color="white" /> : "Save Item"}
             </button>
+            
 
           </form>
         </div>

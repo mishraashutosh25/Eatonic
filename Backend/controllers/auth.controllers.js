@@ -38,8 +38,7 @@ export const signUp = async (req, res) => {
                 return res.status(201).json(user)
         }
         catch (error) {
-                return res.status(500).json(`Signup failed. Please try again later. ${error.message}`);
-
+                return res.status(500).json({ message: `Signup failed. Please try again later. ${error.message}` });
         }
 
 };
@@ -67,8 +66,7 @@ export const signIn = async (req, res) => {
                 return res.status(201).json(user)
         }
         catch (error) {
-                return res.status(500).json(`sign In failed. Please try again later. ${error.message}`);
-
+                return res.status(500).json({ message: `Sign In failed. Please try again later. ${error.message}` });
         }
 
 };
@@ -78,7 +76,7 @@ export const signOut = async (req, res) => {
                 res.clearCookie("token")
                 return res.status(200).json({ message: "Signed out successfully" })
         } catch (error) {
-                return res.status(500).json(`Sign out failed. Please try again later. ${error.message}`);
+                return res.status(500).json({ message: `Sign out failed. Please try again later. ${error.message}` });
         }
 };
 
@@ -149,33 +147,30 @@ export const resetPassword = async (req, res) => {
                 await user.save();
                 return res.status(200).json({ message: "Password reset successfully" });
         } catch (error) {
-                return res.status(500).json(`Reset Password failed. Please try again later. ${error.message}`);
+                return res.status(500).json({ message: `Reset Password failed. Please try again later. ${error.message}` });
         }
 };
 
 export const googleAuth = async (req, res) => {
         try {
                 const { fullname, email, mobile, role } = req.body;
-                let user = await User.findOne({ email })
+                let user = await User.findOne({ email });
                 if (!user) {
                         user = await User.create({
                                 fullname, email, mobile, role
-                        })
-                        const token = await genToken(user._id)
-                        res.cookie("token", token, {
-                                secure: false,
-                                sameSite: "lax",
-                                maxAge: 5 * 24 * 60 * 60 * 1000,
-                                httpOnly: true
-                        })
-                        return res.status(201).json(user)
-
+                        });
                 }
-
-
+                const token = await genToken(user._id);
+                res.cookie("token", token, {
+                        secure: false,
+                        sameSite: "lax",
+                        maxAge: 5 * 24 * 60 * 60 * 1000,
+                        httpOnly: true
+                });
+                return res.status(200).json(user);
         } catch (error) {
-                return res.status(500).json(`Google Auth failed. Please try again later. ${error.message}`);
-
+                console.error(error);
+                return res.status(500).json({ message: `Google Auth failed. Please try again later. ${error.message}` });
         }
 };
 

@@ -8,6 +8,13 @@ const itemSchema = new mongoose.Schema(
       trim: true
     },
 
+    description: {
+      type: String,
+      trim: true,
+      maxLength: 200,
+      default: ""
+    },
+
     image: {
       type: String,
       required: true
@@ -53,6 +60,11 @@ const itemSchema = new mongoose.Schema(
     isAvailable: {
       type: Boolean,
       default: true
+    },
+
+    isSpecial: {
+      type: Boolean,
+      default: false    // Owner can mark one item as "Today's Special"
     },
     rating:{
 average:{type:Number,default:0},
