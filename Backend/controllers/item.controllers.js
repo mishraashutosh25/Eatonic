@@ -83,7 +83,7 @@ export const editItem = async (req, res) => {
                 const allShops = await Shop.find({ owner: req.userId }).populate([
                         { path: "owner" },
                         { path: "items", options: { sort: { updatedAt: -1 } } }
-                ]);
+                ]).lean();
 
                 return res.status(200).json(allShops);
 
@@ -147,14 +147,14 @@ export const getItemByCity = async (req, res) => {
                         query.area = { $regex: new RegExp(`^${area}$`, "i") };
                 }
 
-                const shops = await Shop.find(query).populate("items");
+                const shops = await Shop.find(query).populate("items").lean();
 
                 if (!shops || shops.length === 0) {
                         return res.status(200).json([]);
                 }
                 const shopIds = shops.map((shop) => shop._id)
 
-                const items = await Item.find({ shop: { $in: shopIds } })
+                const items = await Item.find({ shop: { $in: shopIds } }).lean();
                 return res.status(200).json(items)
         } catch (error) {
                 return res.status(500).json({ success: false, message: safeError(error.message) });

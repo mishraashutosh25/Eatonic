@@ -14,7 +14,7 @@ function Home() {
     <div className='w-[100w] min-h-[100vh] pt-[100px] flex flex-col items-center bg-gradient-to-br from-orange-100 via-white to-emerald-100'>
       {userData.role == "user" && <UserDashboard />}
       {userData.role == "owner" && <OwnerDashboard />}
-      {userData.role == "deliveryboy" && <DeliveryBoyDashboard />}
+      {userData.role === "deliveryBoy" && <DeliveryBoyDashboard />}
 
 
 

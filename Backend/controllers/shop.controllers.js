@@ -68,7 +68,7 @@ export const createEditShop = async (req, res) => {
     const allShops = await Shop.find({ owner: req.userId }).populate([
       { path: "owner" },
       { path: "items", options: { sort: { updatedAt: -1 } } }
-    ]);
+    ]).lean();
     return res.status(201).json(allShops);
 
   } catch (error) {
@@ -82,7 +82,7 @@ export const getMyShop = async (req, res) => {
     const shops = await Shop.find({ owner: req.userId }).populate("owner").populate({
       path:"items",
       options:{sort:{updatedAt:-1}}
-    });
+    }).lean();
     return res.status(200).json(shops); // Now returns an array!
   } catch (error) {
     return res.status(500).json({ success: false, message: safeError(error.message) });
@@ -99,7 +99,7 @@ export const getShopByCity = async (req, res) => {
       query.area = { $regex: new RegExp(`^${area}$`, "i") };
     }
 
-    const shops = await Shop.find(query).populate("items");
+    const shops = await Shop.find(query).populate("items").lean();
 
     if (!shops || shops.length === 0) {
       return res.status(200).json([]);
@@ -124,7 +124,7 @@ export const getHomeChefsByCity = async (req, res) => {
       query.area = { $regex: new RegExp(`^${area}$`, "i") };
     }
 
-    const chefs = await Shop.find(query).populate("owner", "fullname").populate("items");
+    const chefs = await Shop.find(query).populate("owner", "fullname").populate("items").lean();
     return res.status(200).json(chefs);
   } catch (error) {
     return res.status(500).json({ success: false, message: safeError(error.message) });
@@ -136,7 +136,7 @@ export const getChefById = async (req, res) => {
     const { shopId } = req.params;
     const shop = await Shop.findById(shopId)
       .populate("owner", "fullname mobile")       // ← include mobile for WhatsApp
-      .populate({ path: "items", options: { sort: { createdAt: -1 } } });
+      .populate({ path: "items", options: { sort: { createdAt: -1 } } }).lean();
 
     if (!shop) return res.status(404).json({ message: "Chef / Shop not found" });
     return res.status(200).json(shop);
@@ -164,7 +164,7 @@ export const toggleShopStatus = async (req, res) => {
     const allShops = await Shop.find({ owner: req.userId }).populate([
       { path: "owner" },
       { path: "items", options: { sort: { updatedAt: -1 } } }
-    ]);
+    ]).lean();
     return res.status(200).json(allShops);
 
   } catch (error) {
@@ -191,7 +191,7 @@ export const deleteShop = async (req, res) => {
     const allShops = await Shop.find({ owner: req.userId }).populate([
       { path: "owner" },
       { path: "items", options: { sort: { updatedAt: -1 } } }
-    ]);
+    ]).lean();
     return res.status(200).json(allShops);
 
   } catch (error) {
@@ -228,7 +228,7 @@ export const setFlashDeal = async (req, res) => {
     const allShops = await Shop.find({ owner: req.userId }).populate([
       { path: "owner" },
       { path: "items", options: { sort: { updatedAt: -1 } } }
-    ]);
+    ]).lean();
     return res.status(200).json(allShops);
 
   } catch (error) {

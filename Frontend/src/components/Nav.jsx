@@ -26,8 +26,10 @@ function Nav() {
 
   const handleLogOut = async () => {
     try {
-      const res = await axios.get(`${serverUrl}/api/auth/signout`, { withCredentials: true })
+      await axios.get(`${serverUrl}/api/auth/signout`, { withCredentials: true })
       dispatch(setUserData(null))
+      setProfileOpen(false)
+      navigate("/")
     } catch (error) {
       console.log(error)
     }

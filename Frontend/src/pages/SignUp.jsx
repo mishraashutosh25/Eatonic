@@ -38,9 +38,10 @@ export default function Signup() {
                                 { withCredentials: true }
                         );
 
-                        dispatch(setUserData(res.data))
+                        dispatch(setUserData(res.data.user))
                         setErr("");
                         setLoading(false);
+                        navigate("/home");
                 } catch (error) {
                         setErr(error?.response?.data?.message);
                 }
@@ -59,7 +60,8 @@ export default function Signup() {
                                 mobile,
                                 role
                         }, { withCredentials: true });
-                        dispatch(setUserData(data))
+                        dispatch(setUserData(data.user))
+                        navigate("/home");
                 } catch (error) {
                         console.log(error)
                 }

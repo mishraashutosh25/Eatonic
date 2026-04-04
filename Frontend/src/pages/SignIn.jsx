@@ -28,7 +28,7 @@ export default function SignIn() {
         { withCredentials: true }
       );
 
-      dispatch(setUserData(res.data));
+      dispatch(setUserData(res.data.user));
       navigate("/home");
       setErr("");
       setLoading(false);
@@ -47,7 +47,7 @@ export default function SignIn() {
         { email: res.user.email },
         { withCredentials: true }
       );
-      dispatch(setUserData(data));
+      dispatch(setUserData(data.user));
       navigate("/home");
     } catch (error) {
       console.log(error);

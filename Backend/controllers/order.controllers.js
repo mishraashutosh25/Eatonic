@@ -34,7 +34,7 @@ export const placeOrder = async (req, res) => {
       totalAmount: totalAmount || 0,
     });
 
-    const full = await populated(Order.findById(order._id));
+    const full = await populated(Order.findById(order._id)).lean();
     return res.status(201).json({ message: "Order placed!", order: full });
   } catch (error) {
     return res.status(500).json({ success: false, message: safeError(error.message) });
@@ -46,7 +46,7 @@ export const getMyOrders = async (req, res) => {
   try {
     const orders = await populated(
       Order.find({ user: req.userId }).sort({ createdAt: -1 })
-    );
+    ).lean();
     return res.status(200).json(orders);
   } catch (error) {
     return res.status(500).json({ success: false, message: safeError(error.message) });
@@ -66,7 +66,7 @@ export const cancelOrder = async (req, res) => {
     order.statusHistory.push({ status: "cancelled", updatedAt: new Date(), note: "Cancelled by user" });
     await order.save();
 
-    const orders = await populated(Order.find({ user: req.userId }).sort({ createdAt: -1 }));
+    const orders = await populated(Order.find({ user: req.userId }).sort({ createdAt: -1 })).lean();
     return res.status(200).json(orders);
   } catch (error) {
     return res.status(500).json({ success: false, message: safeError(error.message) });
@@ -81,7 +81,7 @@ export const getIncomingOrders = async (req, res) => {
 
     const orders = await populated(
       Order.find({ shop: { $in: shopIds } }).sort({ createdAt: -1 })
-    );
+    ).lean();
     return res.status(200).json(orders);
   } catch (error) {
     return res.status(500).json({ success: false, message: safeError(error.message) });
@@ -119,7 +119,7 @@ export const updateOrderStatus = async (req, res) => {
     const shopIds = myShops.map(s => s._id);
     const allOrders = await populated(
       Order.find({ shop: { $in: shopIds } }).sort({ createdAt: -1 })
-    );
+    ).lean();
     return res.status(200).json(allOrders);
   } catch (error) {
     return res.status(500).json({ success: false, message: safeError(error.message) });
@@ -139,7 +139,7 @@ export const getOrderStats = async (req, res) => {
       Order.countDocuments({ shop: { $in: shopIds } }),
       Order.countDocuments({ shop: { $in: shopIds }, createdAt: { $gte: todayStart } }),
       Order.countDocuments({ shop: { $in: shopIds }, status: "pending" }),
-      Order.find({ shop: { $in: shopIds }, status: { $ne: "rejected" }, createdAt: { $gte: todayStart } }).select("totalAmount"),
+      Order.find({ shop: { $in: shopIds }, status: { $ne: "rejected" }, createdAt: { $gte: todayStart } }).select("totalAmount").lean(),
     ]);
 
     const todayRevenue = allOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
