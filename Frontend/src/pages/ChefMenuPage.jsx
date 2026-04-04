@@ -137,7 +137,7 @@ function ChefMenuPage() {
 
       {/* Back */}
       <button onClick={() => navigate(-1)}
-        className="fixed top-20 left-4 z-30 flex items-center gap-2 bg-white/90 backdrop-blur px-4 py-2 rounded-xl shadow-md text-gray-700 font-semibold hover:bg-white transition">
+        className="fixed top-[76px] left-4 z-30 flex items-center gap-2 bg-white/90 backdrop-blur px-4 py-2 rounded-xl shadow-md text-gray-700 font-semibold hover:bg-white transition">
         <IoIosArrowRoundBack size={22} /> Back
       </button>
 

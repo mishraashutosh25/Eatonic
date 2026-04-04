@@ -16,3 +16,11 @@ Frontend/build/
 
 # ===== LOG FILES =====
 *.log
+
+# ===== UPLOADS (local Multer temp files) =====
+Backend/uploads/
+uploads/
+
+# ===== OS JUNK =====
+.DS_Store
+Thumbs.db
