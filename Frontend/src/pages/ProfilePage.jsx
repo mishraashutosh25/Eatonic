@@ -6,44 +6,115 @@ import { setUserData } from "../redux/userSlice";
 import Nav from "../components/Nav";
 import { Footer } from "../components/Footer";
 import toast from "react-hot-toast";
-import {
-  FaUser, FaLock, FaShieldAlt, FaCamera, FaCheck,
-  FaEye, FaEyeSlash, FaTrash, FaSignOutAlt, FaArrowLeft
-} from "react-icons/fa";
-import { MdEmail, MdPhone, MdVerified } from "react-icons/md";
-import { ClipLoader } from "react-spinners";
 
 const SERVER = import.meta.env.VITE_SERVER_URL;
 
-const TABS = [
-  { key: "profile",  label: "My Profile",     icon: <FaUser size={14} /> },
-  { key: "password", label: "Change Password", icon: <FaLock size={14} /> },
-  { key: "account",  label: "Account",         icon: <FaShieldAlt size={14} /> },
-];
+/* ─── tiny helpers ─────────────────────────────────────────── */
+function Label({ children }) {
+  return (
+    <label className="block text-[13px] font-semibold text-gray-500 mb-1.5">
+      {children}
+    </label>
+  );
+}
 
-function AvatarCircle({ user, size = "lg" }) {
-  const dim = size === "lg" ? "w-24 h-24 text-3xl" : "w-12 h-12 text-lg";
-  if (user?.avatar) {
+function Input({ ...props }) {
+  return (
+    <input
+      {...props}
+      className={`w-full px-3.5 py-2.5 text-[14px] text-gray-800 bg-white border border-gray-200
+        rounded-lg outline-none transition-all duration-200
+        focus:border-orange-400 focus:ring-2 focus:ring-orange-100
+        disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed
+        placeholder-gray-300 ${props.className || ""}`}
+    />
+  );
+}
+
+function SectionCard({ title, description, children }) {
+  return (
+    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+      {(title || description) && (
+        <div className="px-6 py-4 border-b border-gray-50">
+          {title && <p className="text-[14px] font-semibold text-gray-800">{title}</p>}
+          {description && <p className="text-[13px] text-gray-400 mt-0.5">{description}</p>}
+        </div>
+      )}
+      <div className="px-6 py-5">{children}</div>
+    </div>
+  );
+}
+
+function NavTab({ tabs, active, onChange }) {
+  return (
+    <div className="flex gap-0.5 border-b border-gray-100">
+      {tabs.map(t => (
+        <button
+          key={t.key}
+          onClick={() => onChange(t.key)}
+          className={`px-4 py-2.5 text-[13px] font-semibold transition-all duration-150 border-b-2 -mb-px
+            ${active === t.key
+              ? "border-orange-500 text-orange-600"
+              : "border-transparent text-gray-400 hover:text-gray-700"}`}
+        >
+          {t.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* ─── Avatar ────────────────────────────────────────────────── */
+function Avatar({ user, preview, size = 64 }) {
+  const style = { width: size, height: size, fontSize: size * 0.38 };
+  if (preview || user?.avatar) {
     return (
       <img
-        src={user.avatar}
-        alt={user.fullname}
-        className={`${dim} rounded-2xl object-cover border-4 border-white shadow-xl`}
+        src={preview || user.avatar}
+        alt="avatar"
+        style={style}
+        className="rounded-full object-cover border-2 border-white shadow-md ring-2 ring-gray-100"
       />
     );
   }
   return (
-    <div className={`${dim} rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-white font-black border-4 border-white shadow-xl`}>
+    <div
+      style={style}
+      className="rounded-full bg-orange-500 text-white flex items-center justify-center font-bold border-2 border-white shadow-md ring-2 ring-orange-100 select-none"
+    >
       {user?.fullname?.[0]?.toUpperCase() || "U"}
     </div>
   );
 }
 
-/* ═════════════ PROFILE TAB ═════════════ */
+/* ─── Password strength ─────────────────────────────────────── */
+function StrengthBar({ value }) {
+  if (!value) return null;
+  const score = [/[a-z]/, /[A-Z]/, /\d/, /[^a-zA-Z\d]/].filter(r => r.test(value)).length
+    + (value.length >= 8 ? 1 : 0);
+  const segments = 5;
+  const colors = ["bg-red-400", "bg-orange-400", "bg-yellow-400", "bg-lime-500", "bg-green-500"];
+  const labels = ["", "Weak", "Fair", "Good", "Strong", "Very strong"];
+  const color = colors[Math.min(score, colors.length) - 1] || "bg-gray-200";
+  return (
+    <div className="mt-2 flex items-center gap-3">
+      <div className="flex gap-1 flex-1">
+        {Array.from({ length: segments }).map((_, i) => (
+          <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300 ${i < score ? color : "bg-gray-100"}`} />
+        ))}
+      </div>
+      <span className="text-[11px] font-semibold text-gray-400 w-16 text-right">{labels[score] || ""}</span>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TAB 1 — PROFILE INFO
+═══════════════════════════════════════════════════════════════ */
 function ProfileTab({ user, onUpdate }) {
   const [fullname, setFullname] = useState(user?.fullname || "");
   const [mobile,   setMobile]   = useState(user?.mobile   || "");
-  const [preview,  setPreview]  = useState(user?.avatar   || null);
+  const [preview,  setPreview]  = useState(null);
   const [file,     setFile]     = useState(null);
   const [saving,   setSaving]   = useState(false);
   const fileRef = useRef();
@@ -51,411 +122,360 @@ function ProfileTab({ user, onUpdate }) {
   const handleFileChange = (e) => {
     const f = e.target.files[0];
     if (!f) return;
-    if (f.size > 5 * 1024 * 1024) { toast.error("Image must be under 5MB"); return; }
+    if (f.size > 5 * 1024 * 1024) return toast.error("Image must be under 5 MB");
     setFile(f);
     setPreview(URL.createObjectURL(f));
   };
 
   const handleSave = async () => {
+    const fd = new FormData();
+    fd.append("fullname", fullname.trim());
+    fd.append("mobile",   mobile.trim());
+    if (file) fd.append("avatar", file);
     setSaving(true);
     try {
-      const fd = new FormData();
-      fd.append("fullname", fullname);
-      fd.append("mobile",   mobile);
-      if (file) fd.append("avatar", file);
-
       const res = await axios.put(`${SERVER}/api/user/profile`, fd, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       });
-      toast.success("✅ Profile updated!");
+      toast.success("Profile saved");
       onUpdate(res.data.user);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Update failed");
-    } finally {
-      setSaving(false);
-    }
+    } finally { setSaving(false); }
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Avatar */}
-      <div className="flex flex-col items-center gap-4 py-4">
-        <div className="relative">
-          <AvatarCircle user={{ ...user, avatar: preview }} size="lg" />
+    <div className="space-y-5">
+      {/* Avatar row */}
+      <div className="flex items-center gap-4">
+        <Avatar user={user} preview={preview} size={56} />
+        <div>
           <button
             onClick={() => fileRef.current?.click()}
-            className="absolute -bottom-2 -right-2 w-9 h-9 bg-orange-500 hover:bg-orange-600 text-white rounded-xl flex items-center justify-center shadow-lg transition-all hover:scale-110"
+            className="text-[13px] font-semibold text-orange-600 hover:text-orange-700 transition-colors"
           >
-            <FaCamera size={14} />
+            Change photo
           </button>
+          <p className="text-[12px] text-gray-400 mt-0.5">JPG or PNG, max 5 MB</p>
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
         </div>
-        <div className="text-center">
-          <p className="font-extrabold text-gray-900 text-lg">{user?.fullname}</p>
-          <p className="text-gray-400 text-sm">{user?.email}</p>
-          <span className="mt-1 inline-block text-xs font-bold px-3 py-1 rounded-full bg-orange-100 text-orange-700 uppercase tracking-wide">
-            {user?.role}
-          </span>
-        </div>
       </div>
 
-      <div className="h-px bg-gray-100" />
+      <div className="h-px bg-gray-50" />
 
-      {/* Fields */}
-      <div className="grid gap-4">
+      {/* Form fields */}
+      <div className="grid sm:grid-cols-2 gap-4">
         <div>
-          <label className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5 block flex items-center gap-1.5">
-            <FaUser size={10} className="text-orange-500" /> Full Name
-          </label>
-          <input
-            type="text"
-            value={fullname}
-            onChange={e => setFullname(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-400/30 focus:border-orange-400 bg-gray-50 focus:bg-white transition-all"
-            placeholder="Your full name"
-          />
+          <Label>Full name</Label>
+          <Input value={fullname} onChange={e => setFullname(e.target.value)} placeholder="Your name" />
         </div>
-
         <div>
-          <label className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5 block flex items-center gap-1.5">
-            <MdEmail size={12} className="text-orange-500" /> Email Address
-          </label>
+          <Label>Mobile number</Label>
+          <Input value={mobile} onChange={e => setMobile(e.target.value)} placeholder="+91 XXXXXXXXXX" />
+        </div>
+        <div className="sm:col-span-2">
+          <Label>Email address</Label>
           <div className="relative">
-            <input
-              type="email"
-              value={user?.email || ""}
-              disabled
-              className="w-full px-4 py-3 border border-gray-100 rounded-xl text-sm bg-gray-50 text-gray-400 cursor-not-allowed pr-10"
-            />
-            <MdVerified className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400" size={18} />
+            <Input value={user?.email || ""} disabled />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-gray-400 bg-gray-50 px-2 py-0.5 rounded">
+              Verified
+            </span>
           </div>
-          <p className="text-xs text-gray-400 mt-1">Email cannot be changed</p>
-        </div>
-
-        <div>
-          <label className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5 block flex items-center gap-1.5">
-            <MdPhone size={12} className="text-orange-500" /> Mobile Number
-          </label>
-          <input
-            type="text"
-            value={mobile}
-            onChange={e => setMobile(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-400/30 focus:border-orange-400 bg-gray-50 focus:bg-white transition-all"
-            placeholder="+91 XXXXXXXXXX"
-          />
+          <p className="text-[12px] text-gray-400 mt-1">Email cannot be changed.</p>
         </div>
       </div>
 
-      <button
-        onClick={handleSave}
-        disabled={saving}
-        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold shadow-lg hover:shadow-orange-200 hover:scale-[1.01] disabled:opacity-60 disabled:scale-100 transition-all flex items-center justify-center gap-2"
-      >
-        {saving ? <ClipLoader size={18} color="white" /> : <><FaCheck size={14}/> Save Changes</>}
-      </button>
+      <div className="flex justify-end pt-1">
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="px-5 py-2.5 text-[13px] font-semibold rounded-lg bg-orange-500 text-white
+            hover:bg-orange-600 active:scale-[0.98] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {saving ? "Saving…" : "Save changes"}
+        </button>
+      </div>
     </div>
   );
 }
 
-/* ═════════════ PASSWORD TAB ═════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   TAB 2 — CHANGE PASSWORD
+═══════════════════════════════════════════════════════════════ */
 function PasswordTab({ user }) {
-  const [current, setCurrent]    = useState("");
-  const [newPass, setNewPass]    = useState("");
-  const [confirm, setConfirm]    = useState("");
-  const [showCurr, setShowCurr]  = useState(false);
-  const [showNew,  setShowNew]   = useState(false);
-  const [saving,   setSaving]    = useState(false);
+  const [current, setCurrent] = useState("");
+  const [newPass, setNewPass] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [showC,   setShowC]   = useState(false);
+  const [showN,   setShowN]   = useState(false);
+  const [saving,  setSaving]  = useState(false);
 
-  const strength = !newPass ? 0
-    : [/[a-z]/, /[A-Z]/, /[0-9]/, /[^a-zA-Z0-9]/].filter(r => r.test(newPass)).length + (newPass.length >= 8 ? 1 : 0);
-  const strengthLabel = ["", "Weak", "Fair", "Good", "Strong", "Very Strong"][strength];
-  const strengthColor = ["", "bg-red-400", "bg-yellow-400", "bg-orange-400", "bg-green-400", "bg-emerald-500"][strength];
+  const mismatch = confirm && newPass !== confirm;
+
+  if (!user?.password) return (
+    <div className="py-10 text-center">
+      <div className="text-3xl mb-3">🔑</div>
+      <p className="font-semibold text-gray-700">Google Sign-In account</p>
+      <p className="text-[13px] text-gray-400 mt-1 max-w-xs mx-auto">
+        Your account uses Google authentication. Password management is handled through Google.
+      </p>
+    </div>
+  );
 
   const handleChange = async () => {
-    if (!current || !newPass || !confirm)
-      return toast.error("All fields are required");
-    if (newPass !== confirm)
-      return toast.error("New passwords don't match");
-    if (newPass.length < 6)
-      return toast.error("Password must be at least 6 characters");
-
+    if (!current || !newPass || !confirm) return toast.error("All fields required");
+    if (mismatch) return toast.error("Passwords don't match");
+    if (newPass.length < 6) return toast.error("Minimum 6 characters required");
     setSaving(true);
     try {
-      await axios.put(`${SERVER}/api/user/change-password`, { currentPassword: current, newPassword: newPass }, { withCredentials: true });
-      toast.success("🔒 Password changed successfully!");
+      await axios.put(`${SERVER}/api/user/change-password`,
+        { currentPassword: current, newPassword: newPass },
+        { withCredentials: true }
+      );
+      toast.success("Password updated");
       setCurrent(""); setNewPass(""); setConfirm("");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to change password");
-    } finally {
-      setSaving(false);
-    }
+      toast.error(err?.response?.data?.message || "Failed to update password");
+    } finally { setSaving(false); }
   };
 
-  if (!user?.password) {
-    return (
-      <div className="flex flex-col items-center gap-4 py-12 text-center">
-        <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center">
-          <FaLock size={24} className="text-blue-400" />
-        </div>
-        <div>
-          <p className="font-bold text-gray-800 mb-1">Google Sign-In Account</p>
-          <p className="text-gray-500 text-sm">You signed in with Google. Password management is handled by your Google account.</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col gap-5">
-      <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 flex gap-3">
-        <FaShieldAlt className="text-blue-400 mt-0.5 shrink-0" size={16} />
-        <p className="text-sm text-blue-700">Use a strong password with a mix of letters, numbers, and symbols for best security.</p>
-      </div>
-
-      {/* Current Password */}
+    <div className="space-y-4 max-w-sm">
       <div>
-        <label className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5 block">Current Password</label>
+        <Label>Current password</Label>
         <div className="relative">
-          <input
-            type={showCurr ? "text" : "password"}
+          <Input
+            type={showC ? "text" : "password"}
             value={current}
             onChange={e => setCurrent(e.target.value)}
-            className="w-full px-4 py-3 pr-11 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-400/30 focus:border-orange-400 bg-gray-50 focus:bg-white transition-all"
-            placeholder="Enter current password"
+            placeholder="••••••••"
+            className="pr-10"
           />
-          <button type="button" onClick={() => setShowCurr(!showCurr)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-            {showCurr ? <FaEyeSlash size={16}/> : <FaEye size={16}/>}
+          <button type="button" onClick={() => setShowC(!showC)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-[12px] font-medium">
+            {showC ? "Hide" : "Show"}
           </button>
         </div>
       </div>
-
-      {/* New Password */}
       <div>
-        <label className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5 block">New Password</label>
+        <Label>New password</Label>
         <div className="relative">
-          <input
-            type={showNew ? "text" : "password"}
+          <Input
+            type={showN ? "text" : "password"}
             value={newPass}
             onChange={e => setNewPass(e.target.value)}
-            className="w-full px-4 py-3 pr-11 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-400/30 focus:border-orange-400 bg-gray-50 focus:bg-white transition-all"
-            placeholder="Enter new password"
+            placeholder="••••••••"
+            className="pr-10"
           />
-          <button type="button" onClick={() => setShowNew(!showNew)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-            {showNew ? <FaEyeSlash size={16}/> : <FaEye size={16}/>}
+          <button type="button" onClick={() => setShowN(!showN)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-[12px] font-medium">
+            {showN ? "Hide" : "Show"}
           </button>
         </div>
-        {newPass && (
-          <div className="mt-2 flex items-center gap-2">
-            <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden flex gap-0.5">
-              {[1,2,3,4,5].map(i => (
-                <div key={i} className={`flex-1 rounded-full transition-all ${strength >= i ? strengthColor : 'bg-gray-100'}`}/>
-              ))}
-            </div>
-            <span className={`text-xs font-bold ${strengthColor.replace('bg-','text-')}`}>{strengthLabel}</span>
-          </div>
-        )}
+        <StrengthBar value={newPass} />
       </div>
-
-      {/* Confirm Password */}
       <div>
-        <label className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5 block">Confirm New Password</label>
-        <input
+        <Label>Confirm new password</Label>
+        <Input
           type="password"
           value={confirm}
           onChange={e => setConfirm(e.target.value)}
-          className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 bg-gray-50 focus:bg-white transition-all
-            ${confirm && newPass !== confirm ? 'border-red-300 focus:ring-red-200 focus:border-red-400' : 'border-gray-200 focus:ring-orange-400/30 focus:border-orange-400'}`}
-          placeholder="Re-enter new password"
+          placeholder="••••••••"
+          className={mismatch ? "border-red-300 focus:border-red-400 focus:ring-red-100" : ""}
         />
-        {confirm && newPass !== confirm && (
-          <p className="text-xs text-red-500 mt-1">Passwords don't match</p>
-        )}
+        {mismatch && <p className="text-[12px] text-red-500 mt-1">Passwords don't match</p>}
       </div>
-
-      <button
-        onClick={handleChange}
-        disabled={saving}
-        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold shadow-lg hover:shadow-orange-200 hover:scale-[1.01] disabled:opacity-60 disabled:scale-100 transition-all flex items-center justify-center gap-2"
-      >
-        {saving ? <ClipLoader size={18} color="white" /> : <><FaLock size={14}/> Update Password</>}
-      </button>
-    </div>
-  );
-}
-
-/* ═════════════ ACCOUNT TAB ═════════════ */
-function AccountTab({ user }) {
-  const dispatch  = useDispatch();
-  const navigate  = useNavigate();
-  const [password, setPassword]   = useState("");
-  const [confirm,  setConfirm]    = useState(false);
-  const [deleting, setDeleting]   = useState(false);
-  const [loggingOut, setLoggingOut] = useState(false);
-
-  const handleLogout = async () => {
-    setLoggingOut(true);
-    try {
-      await axios.get(`${SERVER}/api/auth/signout`, { withCredentials: true });
-      dispatch(setUserData(null));
-      navigate("/");
-    } catch {
-      toast.error("Logout failed");
-    } finally {
-      setLoggingOut(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!confirm) { setConfirm(true); return; }
-    setDeleting(true);
-    try {
-      await axios.delete(`${SERVER}/api/user/account`, {
-        data: { password },
-        withCredentials: true
-      });
-      dispatch(setUserData(null));
-      toast.success("Account deleted. Goodbye! 👋");
-      navigate("/");
-    } catch (err) {
-      toast.error(err?.response?.data?.message || "Delete failed");
-    } finally {
-      setDeleting(false);
-      setConfirm(false);
-    }
-  };
-
-  return (
-    <div className="flex flex-col gap-5">
-      {/* Account Info */}
-      <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 flex flex-col gap-3">
-        <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Account Details</p>
-        {[
-          { label: "Name",       value: user?.fullname },
-          { label: "Email",      value: user?.email },
-          { label: "Mobile",     value: user?.mobile },
-          { label: "Role",       value: user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) },
-          { label: "Member Since", value: user?.createdAt ? new Date(user.createdAt).toLocaleDateString("en-IN", { day:"numeric", month:"long", year:"numeric" }) : "—" },
-        ].map(({ label, value }) => (
-          <div key={label} className="flex justify-between text-sm">
-            <span className="text-gray-500 font-medium">{label}</span>
-            <span className="text-gray-800 font-semibold">{value || "—"}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Sign Out */}
-      <button
-        onClick={handleLogout}
-        disabled={loggingOut}
-        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-gray-200 text-gray-700 font-bold hover:bg-gray-50 transition-all"
-      >
-        {loggingOut ? <ClipLoader size={16} color="#374151"/> : <FaSignOutAlt size={14}/>}
-        Sign Out
-      </button>
-
-      {/* Danger Zone */}
-      <div className="border-2 border-red-100 rounded-2xl p-5 flex flex-col gap-4 bg-red-50/50">
-        <div>
-          <p className="font-bold text-red-700 flex items-center gap-2"><FaTrash size={13}/> Danger Zone</p>
-          <p className="text-sm text-red-500 mt-1">Permanently deletes your account and all associated data. This cannot be undone.</p>
-        </div>
-        {confirm && (
-          <div className="flex flex-col gap-3">
-            {user?.password && (
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="Confirm your password"
-                className="w-full px-4 py-2.5 border border-red-200 rounded-xl text-sm focus:outline-none focus:border-red-400 bg-white"
-              />
-            )}
-            <p className="text-xs text-red-600 font-semibold">Are you absolutely sure? Click again to confirm.</p>
-          </div>
-        )}
-        <button
-          onClick={handleDelete}
-          disabled={deleting}
-          className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all text-sm
-            ${confirm ? "bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-200" : "border-2 border-red-300 text-red-600 hover:bg-red-50"}`}
-        >
-          {deleting ? <ClipLoader size={16} color="white"/> : <FaTrash size={12}/>}
-          {confirm ? "Yes, Delete My Account" : "Delete Account"}
+      <div className="pt-1">
+        <button onClick={handleChange} disabled={saving}
+          className="px-5 py-2.5 text-[13px] font-semibold rounded-lg bg-orange-500 text-white
+            hover:bg-orange-600 active:scale-[0.98] transition-all duration-150 disabled:opacity-50">
+          {saving ? "Updating…" : "Update password"}
         </button>
-        {confirm && (
-          <button onClick={() => setConfirm(false)} className="text-sm text-gray-500 hover:text-gray-700 font-medium">
-            Cancel
-          </button>
-        )}
       </div>
     </div>
   );
 }
 
-/* ═════════════ MAIN PAGE ═════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   MAIN PAGE
+═══════════════════════════════════════════════════════════════ */
 export default function ProfilePage() {
   const { userData } = useSelector(s => s.user);
   const dispatch     = useDispatch();
   const navigate     = useNavigate();
-  const [activeTab, setActiveTab] = useState("profile");
+  const [tab,        setTab]        = useState("profile");
+  const [delPass,    setDelPass]    = useState("");
+  const [delConfirm, setDelConfirm] = useState(false);
+  const [deleting,   setDeleting]   = useState(false);
 
-  const handleUpdate = (updatedUser) => {
-    dispatch(setUserData(updatedUser));
+  const onUpdate = (u) => dispatch(setUserData(u));
+
+  const handleLogout = async () => {
+    try {
+      await axios.get(`${SERVER}/api/auth/signout`, { withCredentials: true });
+      dispatch(setUserData(null));
+      navigate("/");
+    } catch { toast.error("Logout failed"); }
   };
 
-  if (!userData) {
-    navigate("/signin");
-    return null;
-  }
+  const handleDelete = async () => {
+    if (!delConfirm) { setDelConfirm(true); return; }
+    setDeleting(true);
+    try {
+      await axios.delete(`${SERVER}/api/user/account`, {
+        data: { password: delPass },
+        withCredentials: true,
+      });
+      dispatch(setUserData(null));
+      navigate("/");
+      toast.success("Account deleted");
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Delete failed");
+    } finally { setDeleting(false); setDelConfirm(false); }
+  };
+
+  if (!userData) { navigate("/signin"); return null; }
+
+  const joinDate = userData?.createdAt
+    ? new Date(userData.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })
+    : "—";
+  const role = userData?.role?.charAt(0).toUpperCase() + userData?.role?.slice(1);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 flex flex-col">
+    <div className="min-h-screen bg-[#F9F8F6] flex flex-col">
       <Nav />
 
-      {/* Hero */}
-      <div className="w-full bg-gradient-to-r from-[#1a0a00] via-[#3d1500] to-[#1a0a00] pt-[82px] pb-8 px-4">
-        <div className="max-w-2xl mx-auto flex items-center gap-4">
-          <button
-            onClick={() => navigate(-1)}
-            className="text-white/60 hover:text-white transition-colors p-2 rounded-xl hover:bg-white/10"
-          >
-            <FaArrowLeft size={18} />
-          </button>
-          <div>
-            <p className="text-orange-400 text-xs font-semibold tracking-widest uppercase">My Account</p>
-            <h1 className="text-2xl font-black text-white mt-0.5">Profile & Settings</h1>
+      <main className="flex-1 pt-[68px]">
+        {/* ── Page header ── */}
+        <div className="border-b border-gray-100 bg-white">
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 flex items-center gap-3">
+            <button onClick={() => navigate(-1)}
+              className="text-gray-400 hover:text-gray-700 transition-colors p-1.5 rounded-lg hover:bg-gray-50">
+              ←
+            </button>
+            <div>
+              <h1 className="text-[18px] font-bold text-gray-900">Account</h1>
+              <p className="text-[13px] text-gray-400">Manage your profile and preferences</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="max-w-2xl mx-auto w-full px-4 py-6 flex flex-col gap-6 flex-1">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 space-y-4">
 
-        {/* Tabs */}
-        <div className="flex gap-1 bg-white border border-gray-100 rounded-2xl p-1 shadow-sm">
-          {TABS.map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-xl transition-all
-                ${activeTab === tab.key
-                  ? "bg-orange-500 text-white shadow-md"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"}`}
-            >
-              {tab.icon}
-              <span className="hidden sm:block">{tab.label}</span>
-            </button>
-          ))}
+          {/* ── PROFILE OVERVIEW ── */}
+          <SectionCard>
+            <div className="flex items-center gap-4">
+              <Avatar user={userData} size={56} />
+              <div className="flex-1 min-w-0">
+                <p className="text-[16px] font-semibold text-gray-900 truncate">{userData.fullname}</p>
+                <p className="text-[13px] text-gray-400 truncate">{userData.email}</p>
+                <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                  <span className="text-[11px] font-semibold px-2.5 py-1 bg-orange-50 text-orange-600 rounded-md border border-orange-100">
+                    {role}
+                  </span>
+                  <span className="text-[11px] text-gray-400">Member since {joinDate}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Stats row */}
+            <div className="mt-5 pt-5 border-t border-gray-50 grid grid-cols-3 gap-4">
+              {[
+                { label: "Orders placed",  value: "—" },
+                { label: "Restaurants",    value: userData.role === "owner" ? "—" : "0" },
+                { label: "Mobile",         value: userData.mobile || "Not set" },
+              ].map(({ label, value }) => (
+                <div key={label}>
+                  <p className="text-[20px] font-bold text-gray-900 truncate">{value}</p>
+                  <p className="text-[12px] text-gray-400 mt-0.5">{label}</p>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+
+          {/* ── PROFILE / PASSWORD TABS ── */}
+          <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+            <div className="px-6 pt-4">
+              <NavTab
+                tabs={[
+                  { key: "profile",  label: "Personal info" },
+                  { key: "password", label: "Password" },
+                ]}
+                active={tab}
+                onChange={setTab}
+              />
+            </div>
+            <div className="px-6 py-5">
+              {tab === "profile"  && <ProfileTab  user={userData} onUpdate={onUpdate} />}
+              {tab === "password" && <PasswordTab user={userData} />}
+            </div>
+          </div>
+
+          {/* ── ACCOUNT ACTIONS ── */}
+          <SectionCard title="Account actions">
+            <div className="space-y-3">
+              {/* Account details */}
+              <div className="grid sm:grid-cols-2 gap-x-8 gap-y-2.5 text-[13px] pb-4 border-b border-gray-50">
+                {[
+                  { label: "Full name",  value: userData.fullname },
+                  { label: "Email",      value: userData.email },
+                  { label: "Mobile",     value: userData.mobile || "—" },
+                  { label: "Member since", value: joinDate },
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex justify-between gap-4">
+                    <span className="text-gray-400">{label}</span>
+                    <span className="text-gray-700 font-medium text-right truncate max-w-[180px]">{value}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Sign out */}
+              <button onClick={handleLogout}
+                className="w-full text-left px-4 py-2.5 rounded-lg text-[13px] font-medium text-gray-700
+                  hover:bg-gray-50 transition-colors duration-150 flex items-center gap-2.5 border border-gray-100">
+                <span className="text-gray-400">↩</span> Sign out of this account
+              </button>
+
+              {/* Delete */}
+              <div className="border border-red-100 rounded-lg overflow-hidden">
+                <button onClick={handleDelete} disabled={deleting}
+                  className="w-full text-left px-4 py-2.5 text-[13px] font-medium text-red-600
+                    hover:bg-red-50 transition-colors duration-150 flex items-center gap-2.5 disabled:opacity-50">
+                  <span>🗑</span>
+                  {delConfirm ? "Click again to confirm permanent deletion" : "Delete my account"}
+                </button>
+                {delConfirm && (
+                  <div className="px-4 pb-4 border-t border-red-50 pt-3 flex flex-col gap-2.5">
+                    {userData?.password && (
+                      <Input
+                        type="password"
+                        value={delPass}
+                        onChange={e => setDelPass(e.target.value)}
+                        placeholder="Enter your password to confirm"
+                      />
+                    )}
+                    <p className="text-[12px] text-red-400">
+                      This permanently deletes your account and all data. This action cannot be undone.
+                    </p>
+                    <div className="flex gap-2">
+                      <button onClick={handleDelete} disabled={deleting}
+                        className="px-4 py-2 text-[12px] font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50">
+                        {deleting ? "Deleting…" : "Confirm delete"}
+                      </button>
+                      <button onClick={() => { setDelConfirm(false); setDelPass(""); }}
+                        className="px-4 py-2 text-[12px] font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </SectionCard>
+
         </div>
-
-        {/* Card */}
-        <div className="bg-white rounded-3xl shadow-md border border-gray-100 p-6">
-          {activeTab === "profile"  && <ProfileTab  user={userData} onUpdate={handleUpdate} />}
-          {activeTab === "password" && <PasswordTab user={userData} />}
-          {activeTab === "account"  && <AccountTab  user={userData} />}
-        </div>
-      </div>
+      </main>
 
       <Footer />
     </div>
