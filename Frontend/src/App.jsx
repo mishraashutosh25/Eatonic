@@ -19,6 +19,7 @@ import CookiePolicy from "./pages/CookiePolicy";
 import Sitemap from "./pages/Sitemap";
 import ChefMenuPage from "./pages/ChefMenuPage";
 import MyOrdersPage from "./pages/MyOrdersPage";
+import ProfilePage from "./pages/ProfilePage";
 
 import useGetCurrentUser from "./hooks/userGetCurrentUser";
 import useGetCity from "./hooks/useGetCity";
@@ -130,6 +131,12 @@ function App() {
       <Route
         path="/my-orders"
         element={userData ? <MyOrdersPage /> : <Navigate to="/signin" replace />}
+      />
+
+      {/* Profile & Settings */}
+      <Route
+        path="/profile"
+        element={userData ? <ProfilePage /> : <Navigate to="/signin" replace />}
       />
     </Routes>
   );

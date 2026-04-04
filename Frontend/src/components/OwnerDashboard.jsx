@@ -170,79 +170,108 @@ export default function OwnerDashboard() {
 
 
 if (shops.length === 0) return (
-  <div className='w-full min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0f0f] to-[#140a0a] flex flex-col overflow-hidden'>
-    
-    <Nav />
+  <div className='w-full min-h-screen flex flex-col relative overflow-hidden'>
 
-    {/* BACKGROUND GLOW */}
-    <div className="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-orange-500/20 blur-3xl rounded-full"></div>
-    <div className="absolute bottom-[-100px] right-[-100px] w-[300px] h-[300px] bg-red-600/20 blur-3xl rounded-full"></div>
+    {/* ── Full-screen background image ── */}
+    <div
+      className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/restaurant_bg.png')" }}
+    />
+    {/* Dark overlay — strong enough to ensure readability */}
+    <div className="absolute inset-0 bg-black/65" />
+    {/* Subtle warm vignette at bottom */}
+    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
+
+    <Nav dark />
 
     <div className='flex-1 flex flex-col justify-center items-center px-4 pt-24 relative z-10'>
 
-      <Tilt
-        glareEnable={true}
-        glareMaxOpacity={0.25}
-        scale={1.05}
-        transitionSpeed={2000}
+      <motion.div
+        initial={{ opacity: 0, y: 28 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        className='w-full max-w-[420px]'
       >
-        <motion.div
-          initial={{ opacity: 0, y: 60, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.7 }}
-          className='w-full max-w-md bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-10 text-center shadow-[0_20px_60px_rgba(0,0,0,0.6)] relative overflow-hidden'
-        >
+        {/* ── Glass Card ── */}
+        <div className='bg-white/[0.07] backdrop-blur-xl border border-white/[0.12] rounded-[28px] p-9 text-center shadow-[0_24px_48px_rgba(0,0,0,0.45)]'>
 
-          {/* GLOW BORDER */}
-          <div className="absolute inset-0 rounded-3xl border border-orange-500/20 pointer-events-none"></div>
+          {/* Icon */}
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mx-auto mb-7 shadow-[0_8px_24px_rgba(180,120,0,0.35)]">
+            <MdRestaurant className="text-white text-3xl" />
+          </div>
 
-          {/* ICON */}
-          <motion.div 
-            animate={{ y: [0, -6, 0] }}
-            transition={{ repeat: Infinity, duration: 3 }}
-            className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center mx-auto mb-6 shadow-[0_10px_30px_rgba(255,80,0,0.5)]"
-          >
-            <MdRestaurant className="text-white text-4xl" />
-          </motion.div>
-
-          {/* TITLE */}
-          <h2 className="text-3xl font-black mb-2 bg-gradient-to-r from-orange-400 to-yellow-300 text-transparent bg-clip-text">
-            List Your Restaurant
-          </h2>
-
-          {/* TEXT */}
-          <p className="text-white/50 mb-8 leading-relaxed text-sm">
-            Reach thousands of hungry customers. Setup takes less than 2 minutes.
+          {/* Eyebrow label */}
+          <p className="text-amber-400/80 text-[11px] font-semibold tracking-[0.18em] uppercase mb-2">
+            Owner Dashboard
           </p>
 
-          {/* FEATURES */}
-          <div className="grid grid-cols-3 gap-3 mb-8">
-            {[['🚀','Go Live Fast'],['📍','Area Targeting'],['📊','Track Sales']].map(([icon, label]) => (
-              
-              <motion.div
-                whileHover={{ scale: 1.1, rotateY: 10 }}
-                key={label}
-                className="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md shadow-md"
-              >
-                <div className="text-2xl mb-1">{icon}</div>
-                <div className="text-xs font-semibold text-white/60">{label}</div>
-              </motion.div>
+          {/* Headline */}
+          <h2 className="text-[26px] font-bold text-white leading-snug mb-3 tracking-tight">
+            List your restaurant
+          </h2>
 
+          {/* Subtext */}
+          <p className="text-white/45 text-sm leading-relaxed mb-8 max-w-[300px] mx-auto">
+            Reach thousands of hungry customers in your city. Setup takes under 2 minutes.
+          </p>
+
+          {/* Feature pills */}
+          <div className="flex items-center justify-center gap-2 flex-wrap mb-8">
+            {[
+              { icon: '🚀', label: 'Go Live Fast' },
+              { icon: '📍', label: 'Area Targeting' },
+              { icon: '📊', label: 'Track Sales' },
+            ].map(({ icon, label }) => (
+              <div
+                key={label}
+                className="flex items-center gap-1.5 bg-white/[0.08] border border-white/[0.10] rounded-full px-3.5 py-1.5 transition-colors duration-200 hover:bg-white/[0.12]"
+              >
+                <span className="text-sm">{icon}</span>
+                <span className="text-[12px] font-medium text-white/60">{label}</span>
+              </div>
             ))}
           </div>
 
-          {/* BUTTON */}
+          {/* Divider */}
+          <div className="border-t border-white/[0.08] mb-7" />
+
+          {/* CTA Button */}
           <motion.button
-            whileTap={{ scale: 0.95 }}
-            whileHover={{ scale: 1.05 }}
-            className='w-full bg-gradient-to-r from-orange-500 to-red-600 text-white px-6 py-3.5 rounded-2xl font-bold shadow-[0_10px_30px_rgba(255,80,0,0.6)] hover:shadow-orange-500/40 transition-all flex items-center justify-center gap-2 text-base'
+            whileHover={{ scale: 1.025 }}
+            whileTap={{ scale: 0.975 }}
+            transition={{ duration: 0.18 }}
+            className='w-full bg-amber-500 hover:bg-amber-400 text-black px-6 py-3.5 rounded-[14px] font-semibold text-[15px] shadow-[0_4px_20px_rgba(200,140,0,0.30)] transition-colors duration-200 flex items-center justify-center gap-2'
             onClick={() => navigate("/create-edit-shop")}
           >
-            <FaPlus size={14} /> Get Started — It's Free
+            <FaPlus size={12} />
+            Get started — it's free
           </motion.button>
 
+          {/* Fine print */}
+          <p className="text-white/25 text-[11px] mt-4">
+            No credit card required · Cancel anytime
+          </p>
+        </div>
+
+        {/* ── Floating stats strip beneath card ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-5 grid grid-cols-3 gap-3"
+        >
+          {[
+            { value: '10K+', label: 'Active users' },
+            { value: '< 2 min', label: 'Setup time' },
+            { value: '₹0', label: 'Listing fee' },
+          ].map(({ value, label }) => (
+            <div key={label} className="bg-white/[0.05] border border-white/[0.08] rounded-2xl py-3 px-2 text-center">
+              <p className="text-white text-base font-bold">{value}</p>
+              <p className="text-white/35 text-[11px] mt-0.5">{label}</p>
+            </div>
+          ))}
         </motion.div>
-      </Tilt>
+      </motion.div>
 
     </div>
   </div>

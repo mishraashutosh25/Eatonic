@@ -10,10 +10,11 @@ import { IoLogOutOutline } from "react-icons/io5";
 import { FiPlus } from "react-icons/fi";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
+import { FaUserCircle, FaCog } from "react-icons/fa";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
-function Nav() {
+function Nav({ dark = false }) {
   const userData    = useSelector(state => state.user.userData);
   const { myShopData } = useSelector((state) => state.owner || {});
   const currentCity = useSelector(state => state.user.currentCity);
@@ -62,22 +63,29 @@ function Nav() {
       )}
 
       {/* ── Navbar ── */}
-      <nav className="w-full h-[68px] fixed top-0 z-[9998] flex items-center justify-between px-4 sm:px-6 lg:px-8
-        bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+      <nav className={`w-full h-[68px] fixed top-0 z-[9998] flex items-center justify-between px-4 sm:px-6 lg:px-8 backdrop-blur-md border-b transition-colors
+        ${dark
+          ? 'bg-black/25 border-white/10'
+          : 'bg-white/95 border-gray-100 shadow-sm'
+        }`}>
 
         {/* ── Brand / Logo ── */}
         <div
-          className="flex items-center gap-2.5 cursor-pointer select-none shrink-0"
+          className="flex items-center gap-2 cursor-pointer select-none shrink-0"
           onClick={() => navigate(userData ? "/home" : "/")}
         >
-          {/* Logo mark */}
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-md shadow-orange-200">
-            <span className="text-white text-lg leading-none">🍽️</span>
-          </div>
+          {/* Actual Eatonic logo */}
+          <img
+            src="/logo.png"
+            alt="Eatonic"
+            className="h-9 w-9 object-contain rounded-lg"
+          />
           {/* Brand name */}
           <div className="flex flex-col leading-none">
-            <span className="text-[18px] font-black text-gray-900 tracking-tight">Eatonic</span>
-            <span className="text-[9px] font-semibold text-orange-500 tracking-widest uppercase hidden sm:block">
+            <span className={`text-[18px] font-black tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}>
+              Eatonic
+            </span>
+            <span className={`text-[9px] font-semibold tracking-widest uppercase hidden sm:block ${dark ? 'text-white/50' : 'text-orange-500'}`}>
               Food Delivery
             </span>
           </div>
@@ -112,7 +120,8 @@ function Nav() {
           {userData?.role === "user" && (
             <button
               onClick={() => setMobileSearchOpen(true)}
-              className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-gray-600 hover:bg-orange-50 hover:text-orange-500 transition-colors"
+              className={`md:hidden w-9 h-9 flex items-center justify-center rounded-xl transition-colors
+                ${dark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-gray-100 text-gray-600 hover:bg-orange-50 hover:text-orange-500'}`}
             >
               <IoMdSearch size={18} />
             </button>
@@ -120,8 +129,9 @@ function Nav() {
 
           {/* Cart (user only) */}
           {userData?.role === "user" && (
-            <button className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-orange-50 transition-colors">
-              <FaCartPlus size={17} className="text-gray-600 hover:text-orange-500" />
+            <button className={`relative w-9 h-9 flex items-center justify-center rounded-xl transition-colors
+              ${dark ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-100 hover:bg-orange-50'}`}>
+              <FaCartPlus size={17} className={dark ? 'text-white' : 'text-gray-600'} />
               <span className="absolute -top-1 -right-1 text-[10px] bg-orange-500 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold">
                 0
               </span>
@@ -133,7 +143,10 @@ function Nav() {
             <div className="flex items-center gap-2">
               {myShopData && (
                 <button
-                  className="flex items-center gap-1.5 px-3 py-2 cursor-pointer rounded-xl bg-orange-50 text-orange-600 font-semibold text-sm hover:bg-orange-100 transition-colors border border-orange-100"
+                  className={`flex items-center gap-1.5 px-3 py-2 cursor-pointer rounded-xl font-semibold text-sm transition-colors
+                    ${dark
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30'
+                      : 'bg-orange-50 text-orange-600 border border-orange-100 hover:bg-orange-100'}`}
                   onClick={() => navigate("/add-food")}
                 >
                   <FiPlus size={16} />
@@ -141,7 +154,10 @@ function Nav() {
                 </button>
               )}
               <button
-                className="flex items-center gap-1.5 px-3 py-2 cursor-pointer rounded-xl bg-gray-100 text-gray-600 font-semibold text-sm hover:bg-gray-200 transition-colors"
+                className={`flex items-center gap-1.5 px-3 py-2 cursor-pointer rounded-xl font-semibold text-sm transition-colors
+                  ${dark
+                    ? 'bg-white/10 text-white/80 hover:bg-white/20'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                 onClick={() => navigate("/my-orders")}
               >
                 <HiOutlineShoppingBag size={16} />
@@ -153,7 +169,8 @@ function Nav() {
           {/* User My Orders button */}
           {userData?.role === "user" && (
             <button
-              className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gray-100 text-gray-600 font-semibold text-sm hover:bg-gray-200 transition-colors"
+              className={`hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl font-semibold text-sm transition-colors
+                ${dark ? 'bg-white/10 text-white/80 hover:bg-white/20' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
               onClick={() => navigate("/my-orders")}
             >
               <HiOutlineShoppingBag size={16} /> My Orders
@@ -188,6 +205,15 @@ function Nav() {
                       {userData?.role}
                     </span>
                   </div>
+
+                  {/* Profile Link */}
+                  <button
+                    onClick={() => { setProfileOpen(false); navigate("/profile"); }}
+                    className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors border-b border-gray-50"
+                  >
+                    <FaUserCircle size={16} className="text-orange-500" />
+                    Profile & Settings
+                  </button>
 
                   {/* My Orders (user only, mobile) */}
                   {userData?.role === "user" && (
