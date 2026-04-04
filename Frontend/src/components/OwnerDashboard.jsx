@@ -20,6 +20,7 @@ import { setMyShopData, setIncomingOrders } from '../redux/ownerSlice';
 import useGetMyShop from '../hooks/useGetMyShop.jsx';
 import useGetIncomingOrders from '../hooks/useGetIncomingOrders.jsx';
 import toast from 'react-hot-toast';
+import { Footer } from './Footer';
 
 const SERVER = import.meta.env.VITE_SERVER_URL;
 
@@ -671,6 +672,7 @@ if (shops.length === 0) return (
           )}
         </AnimatePresence>
       </div>
+      <Footer />
     </div>
   )
 }

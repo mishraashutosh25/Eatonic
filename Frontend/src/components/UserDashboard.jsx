@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import FoodCard from "./FoodCard";
 import useFlashDealCountdown from "../hooks/useFlashDealCountdown";
 import HomeChefCard from "./HomeChefCard";
+import { Footer } from "./Footer";
 
 // Per-shop flash deal badge with live countdown
 function FlashBadge({ shop }) {
@@ -62,7 +63,7 @@ function UserDashboard() {
     <div className="w-screen min-h-screen bg-gradient-to-br from-orange-100 via-white to-emerald-100 overflow-y-auto">
       <Nav />
 
-      <div className="w-full max-w-6xl mx-auto flex flex-col gap-6 pt-20 sm:pt-24 px-3 sm:px-6">
+      <div className="w-full max-w-6xl mx-auto flex flex-col gap-6 pt-[82px] sm:pt-[82px] px-3 sm:px-6">
 
         <div className="flex flex-col gap-1">
           <h1 className="text-gray-900 text-2xl sm:text-3xl font-extrabold tracking-tight">
@@ -190,6 +191,9 @@ function UserDashboard() {
           <p className="text-gray-500">No items available in this area.</p>
         )}
       </div>
+
+      {/* ── Footer ── */}
+      <Footer />
     </div>
   );
 }
