@@ -2,6 +2,9 @@ import Shop from "../models/shop.model.js";
 import Item from "../models/item.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
+const isProd = process.env.NODE_ENV === "production";
+const safeError = (msg) => isProd ? "Something went wrong. Please try again." : msg;
+
 
 export const createEditShop = async (req, res) => {
   try {
@@ -69,10 +72,7 @@ export const createEditShop = async (req, res) => {
     return res.status(201).json(allShops);
 
   } catch (error) {
-    return res.status(500).json({
-      message: "Create shop error",
-      error: error.message
-    });
+    return res.status(500).json({ success: false, message: safeError(error.message) });
   }
 };
 
@@ -85,10 +85,7 @@ export const getMyShop = async (req, res) => {
     });
     return res.status(200).json(shops); // Now returns an array!
   } catch (error) {
-    return res.status(500).json({
-      message: "Get My Shop error",
-      error: error.message
-    });
+    return res.status(500).json({ success: false, message: safeError(error.message) });
   }
 };
 
@@ -110,10 +107,7 @@ export const getShopByCity = async (req, res) => {
 
     return res.status(200).json(shops);
   } catch (error) {
-    return res.status(500).json({
-      message: "Get Shop by city error",
-      error: error.message
-    });
+    return res.status(500).json({ success: false, message: safeError(error.message) });
   }
 };
 
@@ -133,7 +127,7 @@ export const getHomeChefsByCity = async (req, res) => {
     const chefs = await Shop.find(query).populate("owner", "fullname").populate("items");
     return res.status(200).json(chefs);
   } catch (error) {
-    return res.status(500).json({ message: "Get Home Chefs error", error: error.message });
+    return res.status(500).json({ success: false, message: safeError(error.message) });
   }
 };
 
@@ -147,7 +141,7 @@ export const getChefById = async (req, res) => {
     if (!shop) return res.status(404).json({ message: "Chef / Shop not found" });
     return res.status(200).json(shop);
   } catch (error) {
-    return res.status(500).json({ message: "Get Chef error", error: error.message });
+    return res.status(500).json({ success: false, message: safeError(error.message) });
   }
 };
 
@@ -174,10 +168,7 @@ export const toggleShopStatus = async (req, res) => {
     return res.status(200).json(allShops);
 
   } catch (error) {
-    return res.status(500).json({
-      message: "Toggle shop status error",
-      error: error.message
-    });
+    return res.status(500).json({ success: false, message: safeError(error.message) });
   }
 };
 export const deleteShop = async (req, res) => {
@@ -204,10 +195,7 @@ export const deleteShop = async (req, res) => {
     return res.status(200).json(allShops);
 
   } catch (error) {
-    return res.status(500).json({
-      message: "Delete shop error",
-      error: error.message
-    });
+    return res.status(500).json({ success: false, message: safeError(error.message) });
   }
 };
 
@@ -244,6 +232,6 @@ export const setFlashDeal = async (req, res) => {
     return res.status(200).json(allShops);
 
   } catch (error) {
-    return res.status(500).json({ message: "Flash deal error", error: error.message });
+    return res.status(500).json({ success: false, message: safeError(error.message) });
   }
 };

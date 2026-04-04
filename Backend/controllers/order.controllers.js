@@ -1,6 +1,9 @@
 import Order from "../models/order.model.js";
 import Shop from "../models/shop.model.js";
 
+const isProd = process.env.NODE_ENV === "production";
+const safeError = (msg) => isProd ? "Something went wrong. Please try again." : msg;
+
 const populated = (query) =>
   query
     .populate("user", "fullname mobile email")
@@ -34,8 +37,7 @@ export const placeOrder = async (req, res) => {
     const full = await populated(Order.findById(order._id));
     return res.status(201).json({ message: "Order placed!", order: full });
   } catch (error) {
-    console.error("❌ placeOrder error:", error.message);
-    return res.status(500).json({ message: "Place order error", error: error.message });
+    return res.status(500).json({ success: false, message: safeError(error.message) });
   }
 };
 
@@ -47,7 +49,7 @@ export const getMyOrders = async (req, res) => {
     );
     return res.status(200).json(orders);
   } catch (error) {
-    return res.status(500).json({ message: "Get orders error", error: error.message });
+    return res.status(500).json({ success: false, message: safeError(error.message) });
   }
 };
 
@@ -67,7 +69,7 @@ export const cancelOrder = async (req, res) => {
     const orders = await populated(Order.find({ user: req.userId }).sort({ createdAt: -1 }));
     return res.status(200).json(orders);
   } catch (error) {
-    return res.status(500).json({ message: "Cancel error", error: error.message });
+    return res.status(500).json({ success: false, message: safeError(error.message) });
   }
 };
 
@@ -82,7 +84,7 @@ export const getIncomingOrders = async (req, res) => {
     );
     return res.status(200).json(orders);
   } catch (error) {
-    return res.status(500).json({ message: "Get incoming orders error", error: error.message });
+    return res.status(500).json({ success: false, message: safeError(error.message) });
   }
 };
 
@@ -120,7 +122,7 @@ export const updateOrderStatus = async (req, res) => {
     );
     return res.status(200).json(allOrders);
   } catch (error) {
-    return res.status(500).json({ message: "Update order error", error: error.message });
+    return res.status(500).json({ success: false, message: safeError(error.message) });
   }
 };
 
@@ -144,6 +146,6 @@ export const getOrderStats = async (req, res) => {
 
     return res.status(200).json({ totalOrders, todayOrders, pendingOrders, todayRevenue });
   } catch (error) {
-    return res.status(500).json({ message: "Stats error", error: error.message });
+    return res.status(500).json({ success: false, message: safeError(error.message) });
   }
 };

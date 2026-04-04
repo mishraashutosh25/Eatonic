@@ -1,7 +1,9 @@
-import { populate } from "dotenv";
 import Item from "../models/item.model.js";
 import Shop from "../models/shop.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+
+const isProd = process.env.NODE_ENV === "production";
+const safeError = (msg) => isProd ? "Something went wrong. Please try again." : msg;
 
 
 export const addItem = async (req, res) => {
@@ -44,9 +46,7 @@ export const addItem = async (req, res) => {
                 return res.status(201).json(allShops);
 
         } catch (error) {
-                return res.status(500).json({
-                        message: error.message
-                });
+                return res.status(500).json({ success: false, message: safeError(error.message) });
         }
 };
 
@@ -88,8 +88,7 @@ export const editItem = async (req, res) => {
                 return res.status(200).json(allShops);
 
         } catch (error) {
-                console.error("EDIT ITEM ERROR:", error);
-                return res.status(500).json({ message: error.message });
+                return res.status(500).json({ success: false, message: safeError(error.message) });
         }
 };
 
@@ -102,7 +101,7 @@ export const getItemById = async (req, res) => {
                 }
                 return res.status(200).json(item)
         } catch (error) {
-                return res.status(500).json({ message: `Get item eroor ${error}` })
+                return res.status(500).json({ success: false, message: safeError(error.message) });
         }
 };
 
@@ -131,8 +130,7 @@ export const deleteItem = async (req, res) => {
                 return res.status(200).json(allShops);
 
         } catch (error) {
-                console.error("DELETE ITEM ERROR:", error);
-                return res.status(500).json({ message: error.message });
+                return res.status(500).json({ success: false, message: safeError(error.message) });
         }
 };
 
@@ -159,8 +157,7 @@ export const getItemByCity = async (req, res) => {
                 const items = await Item.find({ shop: { $in: shopIds } })
                 return res.status(200).json(items)
         } catch (error) {
-                console.error("Get By City ITEM ERROR:", error);
-                return res.status(500).json({ message: error.message });
+                return res.status(500).json({ success: false, message: safeError(error.message) });
         }
 };
 
@@ -186,8 +183,7 @@ export const toggleItemAvailability = async (req, res) => {
                 ]);
                 return res.status(200).json(allShops);
         } catch (error) {
-                console.error("TOGGLE AVAILABILITY ERROR:", error);
-                return res.status(500).json({ message: error.message });
+                return res.status(500).json({ success: false, message: safeError(error.message) });
         }
 };
 
@@ -213,6 +209,6 @@ export const toggleItemSpecial = async (req, res) => {
                 ]);
                 return res.status(200).json(allShops);
         } catch (error) {
-                return res.status(500).json({ message: error.message });
+                return res.status(500).json({ success: false, message: safeError(error.message) });
         }
 };
