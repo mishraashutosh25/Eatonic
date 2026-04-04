@@ -20,6 +20,7 @@
     "react-dom": "^19.2.0",
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.5.0",
+    "react-parallax-tilt": "^1.7.322",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.12.0",
     "react-spinners": "^0.17.0",
